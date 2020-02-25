@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine\\OpenDataEngine.csproj": {}
+    "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {}
   },
   "projects": {
-    "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine\\OpenDataEngine.csproj": {
+    "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine\\OpenDataEngine.csproj",
+        "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
         "projectName": "OpenDataEngine",
-        "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine\\OpenDataEngine.csproj",
+        "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
         "packagesPath": "C:\\Users\\Chris\\.nuget\\packages\\",
-        "outputPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine\\obj\\",
+        "outputPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Chris\\AppData\\Roaming\\NuGet\\NuGet.Config",
