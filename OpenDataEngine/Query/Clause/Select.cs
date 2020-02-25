@@ -4,13 +4,13 @@ namespace OpenDataEngine.Query.Clause
 {
     public class Select : IClause
     {
-        private String v;
+        private Field[] fields;
 
-        public Select(String v)
+        public Select(params Field[] fields)
         {
-            this.v = v;
+            this.fields = fields;
         }
 
-        public static implicit operator Select(String v) => new Select(v);
+        public static implicit operator Select(Field field) => new Select(field);
     }
 }

@@ -5,10 +5,20 @@ using System.Text;
 
 namespace OpenDataEngine
 {
-    public class Field<T>
+    public class Field
     {
-        public static implicit operator Select(Field<T> self) => new Select("");
-        public static implicit operator Where(Field<T> self) => new Where("");
-        public static implicit operator Limit(Field<T> self) => new Limit(0);
+        public String Name { get; protected set; }
+        public dynamic Value { get; protected set; }
+
+        public static implicit operator String(Field self) => "";
+
+        public static implicit operator Base(Field self) => new Base();
+    }
+
+    public class Field<T>: Field
+    {
+        public new T Value { get; protected set; }
+
+        public static implicit operator Base(Field<T> self) => new Base();
     }
 }
