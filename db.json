@@ -1,10 +1,10 @@
 {
 	"books": [
 		{
-			"title": "My first book",
+			"title": "My first book"
 		},
 		{
-			"title": "My second book",
-		},
-	],
+			"title": "My second book"
+		}
+	]
 }
