@@ -1,0 +1,8 @@
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\bin\Debug\netcoreapp3.1\OpenDataEngine.deps.json
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\bin\Debug\netcoreapp3.1\OpenDataEngine.dll
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\bin\Debug\netcoreapp3.1\OpenDataEngine.pdb
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\obj\Debug\netcoreapp3.1\OpenDataEngine.csprojAssemblyReference.cache
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\obj\Debug\netcoreapp3.1\OpenDataEngine.AssemblyInfoInputs.cache
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\obj\Debug\netcoreapp3.1\OpenDataEngine.AssemblyInfo.cs
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\obj\Debug\netcoreapp3.1\OpenDataEngine.dll
+D:\Github\open-data-engine\CSharp\OpenDataEngine\OpenDataEngine\obj\Debug\netcoreapp3.1\OpenDataEngine.pdb
