@@ -32,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\Example\\Example.csproj",
+      "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\Example\\Example.csproj",
       "projectName": "Example",
-      "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\Example\\Example.csproj",
+      "projectPath": "D:\\Github\\open-data-engine\\CSharp\\Example\\Example.csproj",
       "packagesPath": "C:\\Users\\Chris\\.nuget\\packages\\",
-      "outputPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\Example\\obj\\",
+      "outputPath": "D:\\Github\\open-data-engine\\CSharp\\Example\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Chris\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -52,8 +52,8 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine\\OpenDataEngine.csproj": {
-              "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine\\OpenDataEngine.csproj"
+            "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {
+              "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj"
             }
           }
         }
