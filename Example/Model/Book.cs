@@ -3,14 +3,13 @@ using OpenDataEngine.Adapter;
 using OpenDataEngine.Connection;
 using OpenDataEngine.Schema;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Example.Model
 {
-    public class Book: OpenDataEngine.Model
+    public class Book: Model<Book>
     {
-        public String Title;
+        public static readonly Field<String> Title = new Field<String>();
+        private String title;
 
         public static (String, Source)[] Sources = new (String, Source)[]
         {
