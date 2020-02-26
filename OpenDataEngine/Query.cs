@@ -18,7 +18,7 @@ namespace OpenDataEngine
 
         public async Task<T> Find(dynamic args = null)
         {
-            return default;
+            return new T();
         }
         public async IAsyncEnumerable<T> FindAll(dynamic args = null)
         {

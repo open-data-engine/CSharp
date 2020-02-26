@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Example.Model
 {
-    public class Post : OpenDataEngine.Model
+    public class Post : OpenDataEngine.Model<Post>
     {
         public String Title;
 
@@ -25,7 +25,7 @@ namespace Example.Model
                     }, 
                 }),
                 new Json(),
-                new Rest("book")
+                new Rest("book", new { })
             )),
         };
     }

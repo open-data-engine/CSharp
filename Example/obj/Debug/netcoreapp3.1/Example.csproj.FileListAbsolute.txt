@@ -1,0 +1,2 @@
+D:\Github\open-data-engine\CSharp\Example\obj\Debug\netcoreapp3.1\Example.AssemblyInfoInputs.cache
+D:\Github\open-data-engine\CSharp\Example\obj\Debug\netcoreapp3.1\Example.AssemblyInfo.cs

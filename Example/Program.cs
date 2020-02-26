@@ -9,7 +9,12 @@ namespace Example
 {
     class Program
     {
-        static async void Main(string[] args)
+        static void Main(string[] args)
+        {
+            Run();
+        }
+
+        static async void Run()
         {
             String title = "My first book";
 

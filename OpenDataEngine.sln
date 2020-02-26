@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenDataEngine", "OpenDataEngine\OpenDataEngine.csproj", "{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "Example\Example.csproj", "{127FAE6C-A075-4EED-9576-5439FEA52584}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example", "Example\Example.csproj", "{127FAE6C-A075-4EED-9576-5439FEA52584}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8C93BB6A-878E-40D8-BBF7-B82896BE295B}"
 	ProjectSection(SolutionItems) = preProject
@@ -16,17 +16,27 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Debug|x64.ActiveCfg = Debug|x64
+		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Debug|x64.Build.0 = Debug|x64
 		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Release|x64.ActiveCfg = Release|x64
+		{6DF53056-A91A-47C8-8CFA-9D3EC4FC5CCB}.Release|x64.Build.0 = Release|x64
 		{127FAE6C-A075-4EED-9576-5439FEA52584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{127FAE6C-A075-4EED-9576-5439FEA52584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{127FAE6C-A075-4EED-9576-5439FEA52584}.Debug|x64.ActiveCfg = Debug|x64
+		{127FAE6C-A075-4EED-9576-5439FEA52584}.Debug|x64.Build.0 = Debug|x64
 		{127FAE6C-A075-4EED-9576-5439FEA52584}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{127FAE6C-A075-4EED-9576-5439FEA52584}.Release|Any CPU.Build.0 = Release|Any CPU
+		{127FAE6C-A075-4EED-9576-5439FEA52584}.Release|x64.ActiveCfg = Release|x64
+		{127FAE6C-A075-4EED-9576-5439FEA52584}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
