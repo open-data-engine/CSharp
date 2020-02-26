@@ -98,6 +98,6 @@ namespace Example
 
     public static class Extensions
     {
-        public static String ToString(this IEnumerable<String> subject, String delimeter) => String.Join(delimeter, subject.ToList());
+        public static String ToString(this IEnumerable<String> subject, String delimeter) => String.Join(delimeter, subject.ToArray());
     }
 }
