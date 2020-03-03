@@ -10,5 +10,7 @@ namespace OpenDataEngine
         public static Query<T> Order(params Order[] clauses) => Query<T>.Order(clauses);
 
         public I Get<I>(Field<I> field) => default;
+        public void Set<I>(Field<I> field, I value) 
+        { }
     }
 }

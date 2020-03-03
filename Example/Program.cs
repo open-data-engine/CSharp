@@ -27,12 +27,12 @@ namespace Example
              * 
              */
             Console.WriteLine("Style 1");
-
+            
             Book book1 = Book
                 .Select(Book.Title, Book.Title)
                 .Where(Book.Title.Is("@title", title));
 
-            Console.WriteLine(book1.Get(Book.Title));
+            Console.WriteLine(book1.title);
 
             List<Book> books1 = Query<Book>
                 .Select(Book.Title)

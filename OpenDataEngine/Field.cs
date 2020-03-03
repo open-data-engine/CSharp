@@ -13,6 +13,8 @@ namespace OpenDataEngine
         public static implicit operator String(Field self) => "";
 
         public static implicit operator Base(Field self) => new Base();
+
+        public static Field withDefault(dynamic value) => new Field{ Value = value };
     }
 
     public class Field<T>: Field
@@ -20,5 +22,7 @@ namespace OpenDataEngine
         public new T Value { get; protected set; }
 
         public static implicit operator Base(Field<T> self) => new Base();
+
+        public static Field<T> withDefault(T value) => new Field<T> { Value = value };
     }
 }
