@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "VaL5G8IuKJo1knKdC2+Qcqu9p08mBka+RtrZUhMRduDQTZEQhwREMbhtgN3liRF1Aj0NGwhoukqRpyyqMZDoeQ==",
+  "success": true,
+  "projectFilePath": "D:\\Github\\open-data-engine\\CSharp\\Example\\Example.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ChrisKruining\\.nuget\\packages\\system.linq.async\\4.1.1\\system.linq.async.4.1.1.nupkg.sha512",
+    "C:\\Users\\ChrisKruining\\.nuget\\packages\\system.linq.async.queryable\\4.1.1\\system.linq.async.queryable.4.1.1.nupkg.sha512",
+    "C:\\Users\\ChrisKruining\\.nuget\\packages\\system.linq.dynamic.core\\1.1.1\\system.linq.dynamic.core.1.1.1.nupkg.sha512"
+  ],
+  "logs": []
+}

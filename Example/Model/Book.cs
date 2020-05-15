@@ -3,48 +3,24 @@ using OpenDataEngine.Adapter;
 using OpenDataEngine.Connection;
 using OpenDataEngine.Schema;
 using System;
+using OpenDataEngine.Query;
 
 namespace Example.Model
 {
-    public class Book: Model<Book>
+    public struct Book2
     {
-        public static readonly Field<String> Title = new Field<String>();
-        public String title
-        {
-            get => Get(Title);
-            set => Set(Title, value);
-        }
+        public String Title { get; set; }
+        public String Author { get; set; }
+        public String Publisher { get; set; }
+        public DateTime PublishedAt { get; set; }
+    }
 
-        public static readonly dynamic Fields = new
-        {
-            Title = Field<String>.withDefault("Kaas is awesome"),
-        };
-
-        public static readonly dynamic Sources = new
-        {
-            Default = new TypicodeAPI(
-                "https://my-json-server.typicode.com/open-data-engine/CSharp", 
-                "book", 
-                new 
-                {
-                    title = Fields.Title,
-                }
-            ),
-            Cache = new Cache(),
-        };
-
-        public static readonly dynamic Strategies = new
-        {
-            Default = new CacheFirst(
-                cache: Sources.Cache, 
-                fallback: Sources.Default
-            ),
-            Unstable = new StaleWhileRevalidate(
-                cache: Sources.Cache, 
-                fallback: Sources.Default
-            ),
-            Live = new StraightForward(Sources.Default),
-        };
+    public class Book: Queryable<Book>
+    {
+        public String Title { get; set; }
+        public String Author { get; set; }
+        public String Publisher { get; set; }
+        public DateTime PublishedAt { get; set; }
     }
 
     public class Cache : Source

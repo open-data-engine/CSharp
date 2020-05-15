@@ -1,10 +1,12 @@
 {
 	"book": [
 		{
-			"title": "My first book"
+			"title": "Kaas is awesome",
+			"author":  "Chris Kruining" 
 		},
 		{
-			"title": "My second book"
+			"title": "Waarom kaas awesome is",
+      "author": "Chris Kruining"
 		}
 	]
 }

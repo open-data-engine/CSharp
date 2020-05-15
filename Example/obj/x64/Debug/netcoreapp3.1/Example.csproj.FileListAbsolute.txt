@@ -12,3 +12,7 @@ D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\OpenDataEn
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.csproj.CopyComplete
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.dll
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.pdb
+D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.csproj.CoreCompileInputs.cache
+D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.genruntimeconfig.cache
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\System.Linq.Dynamic.Core.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\System.Linq.Async.Queryable.dll
