@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using OpenDataEngine;
 using OpenDataEngine.Query;
 
 namespace Example
@@ -18,12 +19,10 @@ namespace Example
         static async Task Main(string[] args)
         {
             String title = "My first book";
-
-            Init<Book>();
-
+            
             try
             {
-                IAsyncQueryable<Book> books = Book.Select(b => new { b.Title, b.PublishedAt }).Where(b => String.Equals(b.Title, title));
+                IAsyncQueryable<Book> books = Book.Select(b => new { b.Title, b.PublishedAt }).From(new Database<Book>("192.168.198.8", "Chris", "rotschool")).Where(b => b.Title == title);
 
                 await foreach (Book book in books)
                 {
@@ -32,30 +31,8 @@ namespace Example
             }
             catch(Exception exception)
             {
-                Console.WriteLine(exception.Message);
+                Console.WriteLine("Exeption :: " + exception.Message);
             }
-        }
-
-
-        public static void Init<TModel>() where TModel : new()
-        {
-            Query<TModel>.Translator = query =>
-            {
-                IEnumerable<String> selection = new String[0];
-
-                if (query.Expression is Expression<Func<TModel, dynamic>> selectExpression)
-                {
-                    selection = (selectExpression.Body as NewExpression)?.Arguments.Select(a => (a as MemberExpression)?.Member.Name).Where(a => a != null);
-                }
-
-
-
-                return "";
-            };
-            Query<TModel>.Executor = (type, queryString, arguments) =>
-            {
-                return new[] { new TModel(), new TModel() }.ToAsyncEnumerable();
-            };
         }
     }
 }

@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace OpenDataEngine.Query
 {
-    public class Queryable<TModel>
+    public abstract class Queryable<TModel>
     {
+        public static IAsyncQueryable<TModel> From(Source<TModel> source) => new Query<TModel>().From(source);
         public static IAsyncQueryable<TModel> Select(Expression<Func<TModel, dynamic>> expression) => new Query<TModel>().Select(expression);
         public static IAsyncQueryable<TModel> Where(Expression<Func<TModel, Boolean>> expression) => new Query<TModel>().Where(expression);
         public static IAsyncQueryable<TModel> Skip(Int32 numberOf) => new Query<TModel>().Skip(numberOf);
@@ -19,16 +20,13 @@ namespace OpenDataEngine.Query
 
     public class Query<TModel> : IOrderedAsyncQueryable<TModel>
     {
-        public static Func<IAsyncQueryable, String> Translator { get; set; } = _ => "";
-        public static Func<Type, String, Object[], IAsyncEnumerable<TModel>> Executor { get; set; } = (t, q, a) => default;
-
         public IAsyncQueryProvider Provider { get; }
         public Type ElementType { get; } = typeof(TModel);
         public Expression Expression { get; }
 
         public Query()
         {
-            Provider = new QueryProvider<TModel>(Translator, Executor);
+            Provider = new QueryProvider();
             Expression = Expression.Parameter(typeof(IAsyncQueryable<TModel>), "queryable");
         }
 

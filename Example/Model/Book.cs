@@ -23,14 +23,23 @@ namespace Example.Model
         public DateTime PublishedAt { get; set; }
     }
 
-    public class Cache : Source
+    public class Cache<TModel> : Source<TModel>
     {
         public Cache() : base(null, null, null)
         {
         }
     }
 
-    public class TypicodeAPI : Source
+    public class Database<TModel> : Source<TModel>
+    {
+        public Database(String host, String user, String pass) : base(
+            new Mysql(host, user, pass),
+            new Sql(),
+            new Table()
+        ) {}
+    }
+
+    public class TypicodeAPI<TModel> : Source<TModel>
     {
         public TypicodeAPI(String url, String resource, dynamic mapping) : base(
             new Http(url, new
@@ -44,35 +53,33 @@ namespace Example.Model
             }),
             new Json(),
             new Rest(resource, mapping)
-        )
-        {
-        }
+        ) {}
     }
 
-    public class Strategy
+    public class Strategy<TModel>
     {
 
     }
 
-    public class StraightForward : Strategy
+    public class StraightForward<TModel> : Strategy<TModel>
     {
-        public StraightForward(Source source)
+        public StraightForward(Source<TModel> source)
         {
 
         }
     }
 
-    public class StaleWhileRevalidate : Strategy
+    public class StaleWhileRevalidate<TModel> : Strategy<TModel>
     {
-        public StaleWhileRevalidate(Source cache, Source fallback)
+        public StaleWhileRevalidate(Source<TModel> cache, Source<TModel> fallback)
         {
 
         }
     }
 
-    public class CacheFirst : Strategy
+    public class CacheFirst<TModel> : Strategy<TModel>
     {
-        public CacheFirst(Source cache, Source fallback)
+        public CacheFirst(Source<TModel> cache, Source<TModel> fallback)
         {
 
         }

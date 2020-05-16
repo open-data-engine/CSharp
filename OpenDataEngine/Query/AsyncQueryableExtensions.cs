@@ -23,5 +23,7 @@ namespace OpenDataEngine.Query
 
             return query.Provider.CreateQuery<TModel>(Expression.Call(SelectMethod(typeof(TModel)), query.Expression, expression));
         }
+
+        public static IAsyncQueryable<TModel> From<TModel>(this IAsyncQueryable<TModel> query, Source<TModel> source) => new Query<TModel>(source, query.Expression);
     }
 }

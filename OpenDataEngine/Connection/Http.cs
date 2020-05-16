@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OpenDataEngine.Connection
 {
@@ -11,6 +12,11 @@ namespace OpenDataEngine.Connection
         {
             this.endpoint = endpoint;
             this.config = config;
+        }
+
+        public override IAsyncEnumerable<dynamic> Execute(String command, dynamic arguments)
+        {
+            throw new NotImplementedException();
         }
     }
 }

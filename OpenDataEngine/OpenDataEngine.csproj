@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MySql.Data" Version="8.0.20" />
     <PackageReference Include="System.Linq.Async" Version="4.1.1" />
     <PackageReference Include="System.Linq.Async.Queryable" Version="4.1.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.1" />
