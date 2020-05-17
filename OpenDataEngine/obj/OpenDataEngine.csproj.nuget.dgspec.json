@@ -10,7 +10,7 @@
         "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
         "projectName": "OpenDataEngine",
         "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
-        "packagesPath": "C:\\Users\\Chris\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\ChrisKruining\\.nuget\\packages\\",
         "outputPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
@@ -18,9 +18,8 @@
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Chris\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.1.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.2.config",
+          "C:\\Users\\ChrisKruining\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 20.1.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
@@ -28,8 +27,7 @@
           "netcoreapp3.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\DevExpress 19.1\\Components\\System\\Components\\Packages": {},
-          "C:\\Program Files (x86)\\DevExpress 19.2\\Components\\System\\Components\\Packages": {},
+          "C:\\Program Files (x86)\\DevExpress 20.1\\Components\\System\\Components\\Packages": {},
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
@@ -47,9 +45,21 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[8.0.20, )"
+            },
             "System.Linq.Async": {
               "target": "Package",
-              "version": "[4.0.0, )"
+              "version": "[4.1.1, )"
+            },
+            "System.Linq.Async.Queryable": {
+              "target": "Package",
+              "version": "[4.1.1, )"
+            },
+            "System.Linq.Dynamic.Core": {
+              "target": "Package",
+              "version": "[1.1.1, )"
             }
           },
           "imports": [
@@ -67,7 +77,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.100-preview3-014645\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100-preview.2.20176.6\\RuntimeIdentifierGraph.json"
         }
       }
     }
