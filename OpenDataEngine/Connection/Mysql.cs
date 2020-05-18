@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Dynamic;
 using System.Globalization;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using System.Security;
+using System.Threading;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 
@@ -14,28 +16,32 @@ namespace OpenDataEngine.Connection
 {
     public class Mysql: Base
     {
-        private static MySqlConnectionStringBuilder Init(String host, String user, String pass) => new MySqlConnectionStringBuilder()
+        private const UInt32 ConnectionTimeout = 30;
+        private const UInt32 CommandTimeout = 120;
+        private const UInt32 KeepAlive = 30;
+
+        private static MySqlConnectionStringBuilder Init(String host, String user, String pass) => new MySqlConnectionStringBuilder
         {
             Server = host,
             UserID = user,
             Password = pass,
-            Port = 3360,
+            SslMode = MySqlSslMode.VerifyFull,
+            Port = 3306,
             UseCompression = true,
             PersistSecurityInfo = false,
             AllowZeroDateTime = false,
             ConvertZeroDateTime = true,
-            CharacterSet = "UTF8",
+            CharacterSet = "utf8",
             Pooling = false,
-            ConnectionTimeout = 30,
-            DefaultCommandTimeout = 120,
+            ConnectionTimeout = ConnectionTimeout,
+            DefaultCommandTimeout = CommandTimeout,
             ConnectionReset = false,
             CacheServerProperties = true,
-            Keepalive = 30,
+            Keepalive = KeepAlive,
             ProcedureCacheSize = 0,
             TreatTinyAsBoolean = true,
             IgnorePrepare = false,
             AllowUserVariables = true,
-            SslMode = MySqlSslMode.VerifyFull,
         };
 
         private readonly MySqlConnectionStringBuilder _connectionStringBuilder;
@@ -48,6 +54,7 @@ namespace OpenDataEngine.Connection
         public Mysql(String host, String user, String pass): this(Init(host, user, pass)) {}
         public Mysql(String dsn) : this(new MySqlConnectionStringBuilder(dsn)) {}
 
+        private Boolean IsConnected => _connection != null && _connection.State == ConnectionState.Open;
         private async Task Connect()
         {
             if (_connection != null)
@@ -55,46 +62,57 @@ namespace OpenDataEngine.Connection
                 return;
             }
 
-            _connection = new MySqlConnection(_connectionStringBuilder.ToString());
+            try
+            {
+                _connection = new MySqlConnection(_connectionStringBuilder.ToString());
 
-            await _connection.OpenAsync();
+                await _connection.OpenAsync();
+            }
+            catch (MySqlException exception)
+            {
+                throw new DatabaseException(exception);
+            }
         }
 
-        public override async IAsyncEnumerable<dynamic> Execute(String sql, dynamic arguments)
+        private async Task<DbDataReader> ExecuteQuery(String sql, (String, Object)[] arguments)
         {
-            DbDataReader reader;
+            if (IsConnected == false)
+            {
+                throw new Exception("Connection not available for executing query");
+            }
 
             try
             {
-                await Connect();
-
                 await using MySqlCommand command = new MySqlCommand(sql, _connection);
 
-                foreach ((String key, Object value) in ((String, Object)[])arguments)
+                foreach ((String key, Object value) in arguments)
                 {
                     command.Parameters.AddWithValue($"@{key}", value);
                 }
 
-                reader = await command.ExecuteReaderAsync();
+                return await command.ExecuteReaderAsync();
             }
             catch (MySqlException exception)
             {
                 throw new DatabaseException(exception, sql);
             }
+        }
+
+        public override async IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String sql, (String, Object)[] arguments, CancellationToken token)
+        {
+            await Connect();
+            await using DbDataReader reader = await ExecuteQuery(sql, arguments);
 
             while (await reader.ReadAsync())
             {
-                yield return Enumerable.Range(0, reader.FieldCount).ToDictionary(reader.GetName, reader.GetValue).ToObject();
+                yield return Enumerable.Range(0, reader.FieldCount).ToDictionary(reader.GetName, reader.GetValue);
             }
-
-            await reader.CloseAsync();
-            await reader.DisposeAsync();
         }
     }
 
     public class DatabaseException : Exception
     {
-        private static String message(Int32 number) => number switch
+        private static String? message(Int32 number) => number switch
         {
             0 => "Can't get hostname for your address",
             1042 => "Can't create IP socket. This could be caused by closing and opening connections to fast",
@@ -106,10 +124,10 @@ namespace OpenDataEngine.Connection
             1077 => "Server errror, server is shutting down",
             1064 => "Error encountered in SQL syntax",
             1080 => "Forcing thread close",
-            _ => "General error, no further specification"
+            _ => null,
         };
 
         public DatabaseException(MySqlException exception, String query = null, [CallerMemberName] String caller = null, [CallerLineNumber] Int32 lineNumber = 0): 
-            base($"({caller}:{lineNumber.ToString(CultureInfo.InvariantCulture)}) Database error: '{message(exception.Number)}', with query: '{query}'", exception) {}
+            base($"({caller}:{lineNumber.ToString(CultureInfo.InvariantCulture)}) Database error: '{message(exception.Number) ?? exception.Message}', with query: '{query}'", exception) {}
     }
 }

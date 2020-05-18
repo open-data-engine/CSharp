@@ -24,17 +24,16 @@ namespace OpenDataEngine
             Schema = schema;
         }
 
-        public override async ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token)
-        {
+        public async ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token) => (TResult)ExecuteAsync(expression, token);
 
-            (String command, Object[] arguments) = Adapter.Translate(CreateQuery<TModel>(expression));
+        public IAsyncEnumerable<TModel> ExecuteAsync(Expression expression, CancellationToken token) => this.Execute(this.Prepare(expression), token);
+    }
 
-            await foreach (dynamic record in Connection.Execute(command, arguments).WithCancellation(token).ConfigureAwait(false))
-            {
-                
-            }
+    public static class SourceExtensions
+    {
+        public static (String command, (String, Object)[] arguments) Prepare<TModel>(this Source<TModel> source, Expression expression) => source.Adapter.Translate(source.CreateQuery<TModel>(expression));
 
-            return (TResult)Connection.Execute(command, arguments);
-        }
+        public static IAsyncEnumerable<TModel> Execute<TModel>(this Source<TModel> source, (String command, (String, Object)[] arguments) statement, CancellationToken token) => 
+            source.Adapter.From<TModel>(source.Connection.Execute(statement.command, statement.arguments, token), token);
     }
 }

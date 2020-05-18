@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace OpenDataEngine.Connection
 {
@@ -14,7 +15,7 @@ namespace OpenDataEngine.Connection
             this.config = config;
         }
 
-        public override IAsyncEnumerable<dynamic> Execute(String command, dynamic arguments)
+        public override IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String command, (String, Object)[] arguments, CancellationToken token)
         {
             throw new NotImplementedException();
         }

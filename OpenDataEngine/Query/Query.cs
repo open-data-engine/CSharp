@@ -9,7 +9,7 @@ namespace OpenDataEngine.Query
 {
     public abstract class Queryable<TModel>
     {
-        public static IAsyncQueryable<TModel> From(Source<TModel> source) => new Query<TModel>().From(source);
+        public static IAsyncQueryable<TModel> From(IAsyncQueryProvider source) => new Query<TModel>().From(source);
         public static IAsyncQueryable<TModel> Select(Expression<Func<TModel, dynamic>> expression) => new Query<TModel>().Select(expression);
         public static IAsyncQueryable<TModel> Where(Expression<Func<TModel, Boolean>> expression) => new Query<TModel>().Where(expression);
         public static IAsyncQueryable<TModel> Skip(Int32 numberOf) => new Query<TModel>().Skip(numberOf);

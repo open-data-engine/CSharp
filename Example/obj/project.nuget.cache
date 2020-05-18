@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "wMvlW+nvbhi8/aT+CqbRJ7S7ItZ4a24Fy7HTPFFk8wTQnpdj3mtioK+0dM0lYXgYbEBcVrL7C9PbndE1yN08NA==",
+  "dgSpecHash": "DCu8cFKJtXz6uKW0NsyvdgbygrdRClXKdIkOEEnPG0FqyRfp/STot+GnFfCHOm3oX1g8I92WTilsx1d9jx5VIw==",
   "success": true,
   "projectFilePath": "D:\\Github\\open-data-engine\\CSharp\\Example\\Example.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ChrisKruining\\.nuget\\packages\\bouncycastle.netcore\\1.8.3\\bouncycastle.netcore.1.8.3.nupkg.sha512",
+    "C:\\Users\\ChrisKruining\\.nuget\\packages\\dotnetenv\\1.4.0\\dotnetenv.1.4.0.nupkg.sha512",
     "C:\\Users\\ChrisKruining\\.nuget\\packages\\google.protobuf\\3.6.1\\google.protobuf.3.6.1.nupkg.sha512",
     "C:\\Users\\ChrisKruining\\.nuget\\packages\\k4os.compression.lz4\\1.1.11\\k4os.compression.lz4.1.1.11.nupkg.sha512",
     "C:\\Users\\ChrisKruining\\.nuget\\packages\\k4os.compression.lz4.streams\\1.1.11\\k4os.compression.lz4.streams.1.1.11.nupkg.sha512",

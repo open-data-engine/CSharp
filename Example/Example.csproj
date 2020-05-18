@@ -16,7 +16,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="1.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OpenDataEngine\OpenDataEngine.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update=".env">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
