@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using OpenDataEngine.Strategy;
 
 namespace OpenDataEngine.Query
 {
@@ -24,6 +25,6 @@ namespace OpenDataEngine.Query
             return query.Provider.CreateQuery<TModel>(Expression.Call(SelectMethod(typeof(TModel)), query.Expression, expression));
         }
 
-        public static IAsyncQueryable<TModel> From<TModel>(this IAsyncQueryable<TModel> query, Source<TModel> source) => new Query<TModel>(source, query.Expression);
+        public static IAsyncQueryable<TModel> From<TModel>(this IAsyncQueryable<TModel> query, IAsyncQueryProvider source) => new Query<TModel>(source, query.Expression);
     }
 }

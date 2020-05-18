@@ -12,7 +12,6 @@ D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\OpenDataEn
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.csproj.CopyComplete
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.dll
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.pdb
-D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.csproj.CoreCompileInputs.cache
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.genruntimeconfig.cache
 D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\System.Linq.Dynamic.Core.dll
 D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\System.Linq.Async.Queryable.dll
@@ -38,3 +37,6 @@ D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\runtimes\u
 D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
 D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\DotNetEnv.dll
+D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp3.1\Example.csproj.CoreCompileInputs.cache
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp3.1\.env

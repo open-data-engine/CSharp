@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using OpenDataEngine.Query.Clause;
 
 namespace OpenDataEngine.Query
 {
@@ -31,9 +32,7 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Select");
                     }
 
-                    Emit(node.Method.Name, (selectExpression.Body as NewExpression)?.Arguments.Select(a => (a as MemberExpression)?.Member.Name).Where(a => a != null));
-                    
-                    break;
+                    return Expression.Call(node.Object, node.Method, (selectExpression.Body as NewExpression)?.Arguments);
 
                 case "Where":
                     // 'this' argument due to extension method
@@ -45,7 +44,7 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Where");
                     }
 
-                    Emit(node.Method.Name, whereExpression.Body.ToString());
+                    return new Where{ Body = whereExpression.Body };
 
                     break;
 

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace OpenDataEngine.Connection
 {
     public interface IConnection
     {
-        IAsyncEnumerable<dynamic> Execute(String command, dynamic arguments);
+        IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String command, (String, Object)[] arguments, CancellationToken token);
     }
 }
