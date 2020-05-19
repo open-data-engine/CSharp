@@ -25,7 +25,7 @@ namespace OpenDataEngine.Connection
             Server = host,
             UserID = user,
             Password = pass,
-            SslMode = MySqlSslMode.VerifyFull,
+            SslMode = MySqlSslMode.None,
             Port = 3306,
             UseCompression = true,
             PersistSecurityInfo = false,

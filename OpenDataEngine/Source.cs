@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,14 +13,24 @@ namespace OpenDataEngine
     public class Source<TModel>: QueryProvider
     {
         public readonly IConnection Connection;
-        public readonly IAdapter Adapter;
-        public readonly ISchema Schema;
+        public readonly IAdapter<TModel> Adapter;
+        public readonly ISchema<TModel> Schema;
 
-        public Source(IConnection connection, IAdapter adapter, ISchema schema)
+        public Source(IConnection connection, IAdapter<TModel> adapter, ISchema<TModel> schema)
         {
             Connection = connection;
             Adapter = adapter;
             Schema = schema;
+
+            if (Adapter != null)
+            {
+                Adapter.Source = this;
+            }
+
+            if (Schema != null)
+            {
+                Schema.Source = this;
+            }
         }
 
         public async ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token) => (TResult)ExecuteAsync(expression, token);

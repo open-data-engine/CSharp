@@ -7,8 +7,6 @@ namespace OpenDataEngine.Query
 {
     public abstract class QueryVisitor : ExpressionVisitor
     {
-        protected abstract void Emit(String command, dynamic? arguments);
-
         private static readonly Type[] validTypes =
         {
             typeof(AsyncQueryable),
@@ -32,8 +30,8 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Select");
                     }
 
-                    return Expression.Call(node.Object, node.Method, (selectExpression.Body as NewExpression)?.Arguments);
-
+                    return new Select((selectExpression.Body as NewExpression)?.Arguments);
+                    
                 case "Where":
                     // 'this' argument due to extension method
                     Visit(node.Arguments[0]);
@@ -44,35 +42,11 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Where");
                     }
 
-                    return new Where{ Body = whereExpression.Body };
-
-                    break;
+                    return new Where(whereExpression.Body);
 
                 default:
                     throw new NotSupportedException("Operator could not be converted to String");
             }
-
-            return node;
-        }
-
-        protected override Expression VisitUnary(UnaryExpression node)
-        {
-            return base.VisitUnary(node);
-        }
-
-        protected override Expression VisitBinary(BinaryExpression node)
-        {
-            return base.VisitBinary(node);
-        }
-
-        protected override Expression VisitConstant(ConstantExpression node)
-        {
-            return base.VisitConstant(node);
-        }
-
-        protected override Expression VisitMember(MemberExpression node)
-        {
-            // Builder.Append($"`{node.Member.Name}`");
 
             return node;
         }

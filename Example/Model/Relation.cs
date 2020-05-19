@@ -7,5 +7,9 @@ namespace Example.Model
     {
         public UInt32 ID { get; set; }
         public String Username { get; set; }
+
+        public String FirstName { get; set; }
+        public String MiddleName { get; set; }
+        public String LastName { get; set; }
     }
 }

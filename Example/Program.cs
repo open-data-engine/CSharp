@@ -30,20 +30,17 @@ namespace Example
             String user = Env.GetString("DB_USER");
             String pass = Env.GetString("DB_PASS");
 
-            Database<Relation> database = new Database<Relation>(host, user, pass, new { ID = "Relation_ID" });
+            Database<Relation> database = new Database<Relation>(host, user, pass, new { ID = "Customer_ID" });
             Cache<Relation> cache = new Cache<Relation>();
             CacheFirst<Relation> strategy = new CacheFirst<Relation>(cache, database);
 
             try
             {
-                IAsyncQueryable<Relation> relations = Relation.From(strategy).Where(b => b.Username != "");
-                // IAsyncQueryable<Relation> relations = Relation.Select(b => new { b.ID, b.Username }).From(strategy).Where(b => b.Username != "");
-                // IAsyncQueryable<Relation> relations = Relation.Select(b => new { b.ID, b.Username, Number = 10, Str = "Kaas", Bool = false }).From(strategy).Where(b => b.Username != "");
+                IAsyncQueryable<Relation> relations = Relation.Select(b => new { b.ID, b.Username }).From(strategy).Where(b => b.Username != "" && (b.ID > 100 || b.Username == username));
 
                 await foreach (Relation relation in relations)
                 {
                     Console.WriteLine($"Relation({relation.ID}) is named '{relation.Username}'");
-                    Thread.Sleep(500);
                 }
             }
             catch(Exception exception)

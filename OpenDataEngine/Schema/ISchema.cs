@@ -4,7 +4,10 @@ using System.Text;
 
 namespace OpenDataEngine.Schema
 {
-    public interface ISchema
+    public interface ISchema<TModel>
     {
+        public Source<TModel> Source { get; set; }
+
+        public String ResolveProperty(String property);
     }
 }

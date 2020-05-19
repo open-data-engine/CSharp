@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace OpenDataEngine.Adapter
         Limit,
     }
 
-    public class Sql: Base
+    public class Sql<TModel>: Base<TModel>
     {
         private static readonly Dictionary<Clause, Clause[]> Dependencies = new Dictionary<Clause, Clause[]>
         {
@@ -52,7 +53,7 @@ namespace OpenDataEngine.Adapter
         private UInt64 _constCount;
         private readonly List<(String, Object)> _arguments = new List<(String, Object)>();
         private readonly Dictionary<Clause, List<String>> _clauses = new Dictionary<Clause, List<String>>();
-
+        
         public override(String Command, (String, Object)[] Arguments) Translate(IAsyncQueryable query)
         {
             Visit(query.Expression);
@@ -77,61 +78,27 @@ namespace OpenDataEngine.Adapter
         {
             Query.Clause.Base expression = (Query.Clause.Base)base.VisitMethodCall(node);
 
+            Clause clause;
+            String sql;
+
             switch (expression)
             {
                 case Select selectExpression:
+                    clause = Clause.Select;
+                    sql = $"SELECT {String.Join(", ", selectExpression.Fields.Select(Recurse))}";
+
                     break;
 
                 case Where whereExpression:
+                    clause = Clause.Where;
+                    sql = $"{(_clauses.ContainsKey(Clause.Where) ? "AND" : "WHERE")} {Recurse(whereExpression.Body)}";
+
                     break;
-            }
 
-            return node;
-        }
-
-        protected override void Emit(String command, dynamic? arguments)
-        {
-            Clause clause = Enum.Parse<Clause>(command);
-            String sql;
-            switch (clause)
-            {
-                case Clause.Select:
-                    List<String> selectArgs = new List<String>();
-
-                    foreach (Expression expression in arguments as IEnumerable<Expression> ?? new Expression[0])
-                    {
-                        switch(expression)
-                        {
-                            case MemberExpression memberExpression:
-                                selectArgs.Add(memberExpression.ToSql());
-                                break;
-
-                            // TODO(Chris Kruining) The const is picked up nicely, however the name is missing, this way I can't alias the variable
-                            case ConstantExpression constantExpression:
-                                String constName = $"CONST_{_constCount++.Base52Encode()}";
-
-                                _arguments.Add((constName, constantExpression.Value));
-                                selectArgs.Add($"@{constName}");
-                                break;
-
-                            default:
-                                var kaas = expression.Type;
-                                break;
-                        }
-                    }
-
-                    sql = $"SELECT {String.Join(", ", selectArgs)}";
-                    break;
-                case Clause.Where:
-                    // TODO(Chris Kruining) Extract the variables and their values
-                    // TODO(Chris Kruining) convert arguments to sql string
-
-                    sql = $"{(_clauses.ContainsKey(Clause.Where) ? "AND" : "WHERE")} AGRS";
-                    break;
                 default:
-                    sql = $"{command.ToUpperInvariant()} ARGS";
-                    break;
+                    throw new Exception($"Unhandeled clause '{expression.GetType()}'");
             }
+
 
             if (_clauses.ContainsKey(clause) == false)
             {
@@ -139,6 +106,8 @@ namespace OpenDataEngine.Adapter
             }
 
             _clauses[clause].Add(sql);
+
+            return node;
         }
 
         public async override IAsyncEnumerable<TResult> From<TResult>(IAsyncEnumerable<IDictionary<String, dynamic>> source, [EnumeratorCancellation] CancellationToken token)
@@ -151,10 +120,80 @@ namespace OpenDataEngine.Adapter
 
                 foreach ((String key, dynamic value) in record)
                 {
-                    type.GetProperty(key)?.SetValue(result, value, null);
+                    if (type.GetProperty(key) != null)
+                    {
+                        type.GetProperty(key)?.SetValue(result, value, null);
+                    }
+                }
+
+                if (result is Queryable<TResult> res)
+                {
+                    res.CustomProperties = record;
                 }
 
                 yield return result;
+            }
+        }
+
+        private String Recurse(Expression expression)
+        {
+            switch (expression)
+            {
+                case UnaryExpression e:
+                    {
+                        String right = Recurse(e.Operand);
+
+                        return $"({e.NodeType.ToSql()} {right})";
+                    }
+
+                case BinaryExpression e:
+                    {
+                        String right = Recurse(e.Right);
+
+                        return $"({Recurse(e.Left)} {e.NodeType.ToSql(right == "NULL")} {right})";
+                    }
+
+                case ConstantExpression e:
+                    {
+                        String constName = $"CONST_{_constCount++.Base52Encode()}";
+                        _arguments.Add((constName, e.Value));
+
+                        return $"@{constName}";
+                    }
+
+                case MemberExpression e:
+                    {
+                        if (!(e.Member is PropertyInfo) && !(e.Member is FieldInfo))
+                        {
+                            throw new Exception("Unhandeled member access, member is neither a property nor a field");
+                        }
+
+                        if (e.Member.DeclaringType == typeof(TModel))
+                        {
+                            return $"`{Source.Schema.ResolveProperty(e.Member.Name)}`";
+                        }
+
+                        _arguments.Add((e.Member.Name, e.GetValue()));
+                        return $"@{e.Member.Name}";
+                    }
+
+                case MethodCallExpression e:
+                    {
+                        switch (e.Method.Name)
+                        {
+                            case "Contains":
+                                {
+                                    return $"(__prop__ IN(__props__))";
+                                }
+
+                            default:
+                                throw new Exception($"'{e.Method.Name}' method calls in Where clause not supported at this point in time");
+                        }
+
+                    }
+
+                default:
+                    throw new Exception("Unhandeled expression in Where clause");
             }
         }
     }
@@ -167,8 +206,39 @@ namespace OpenDataEngine.Adapter
         // TODO(Chris Kruining) I have a sneeking suspision that this is VERY error prone, make sure it isn't or remove it
         private static T CastTo<T>(this Object subject) => (T)subject;
 
+        public static Object GetValue(this Expression expression)
+        {
+            var member = Expression.Convert(expression, typeof(Object));
+            var lambda = Expression.Lambda<Func<Object>>(member);
+            var getter = lambda.Compile();
+
+            return getter();
+        }
+
         public static String ToSql(this MemberExpression expression) => $"`$database`.`$table`.`${expression.Member.Name}`";
         public static String ToSql(this ConstantExpression expression) => expression.Value.ToSql(expression.Type);
+
+        public static String ToSql(this ExpressionType expressionType, Boolean rightIsNull = false) => expressionType switch
+        {
+            ExpressionType.Add => "+",
+            ExpressionType.Subtract => "-",
+            ExpressionType.Multiply => "*",
+            ExpressionType.Divide => "/",
+            ExpressionType.Modulo => "%",
+            ExpressionType.AndAlso => "AND",
+            ExpressionType.OrElse => "OR",
+            ExpressionType.And => "&",
+            ExpressionType.Or => "|",
+            ExpressionType.ExclusiveOr => "^",
+            ExpressionType.Equal => rightIsNull ? "IS" : "=",
+            ExpressionType.NotEqual => "!=",
+            ExpressionType.Not => "NOT",
+            ExpressionType.LessThan => "<",
+            ExpressionType.LessThanOrEqual => "<=",
+            ExpressionType.GreaterThan => ">",
+            ExpressionType.GreaterThanOrEqual => ">=",
+            _ => throw new Exception("Unhandeled unary node type"),
+        };
 
         public static String ToSql(this Object subject, Type type)
         {

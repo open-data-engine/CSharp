@@ -59,5 +59,8 @@ namespace OpenDataEngine
             while ((value /= 52) != 0);
             return encoded;
         }
+
+        // Resolves some laziness around anonymnous type, likely error prone
+        public static T ValueOf<T>(this Object source, String property) => (T)source.GetType()?.GetProperty(property)?.GetValue(source, null)!;
     }
 }

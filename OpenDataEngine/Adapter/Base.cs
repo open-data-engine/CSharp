@@ -6,10 +6,11 @@ using OpenDataEngine.Query;
 
 namespace OpenDataEngine.Adapter
 {
-    public abstract class Base: QueryVisitor, IAdapter
+    public abstract class Base<TModel> : QueryVisitor, IAdapter<TModel>
     {
-        public abstract (String Command, (String, Object)[] Arguments) Translate(IAsyncQueryable query);
+        public Source<TModel> Source { get; set; }
 
+        public abstract (String Command, (String, Object)[] Arguments) Translate(IAsyncQueryable query);
         public abstract IAsyncEnumerable<TResult> From<TResult>(IAsyncEnumerable<IDictionary<String, dynamic>> source, CancellationToken token);
     }
 }
