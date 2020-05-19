@@ -1,0 +1,9 @@
+D:\Github\open-data-engine\CSharp\OpenDataEngine\bin\x64\Debug\net5.0\OpenDataEngine.deps.json
+D:\Github\open-data-engine\CSharp\OpenDataEngine\bin\x64\Debug\net5.0\OpenDataEngine.dll
+D:\Github\open-data-engine\CSharp\OpenDataEngine\bin\x64\Debug\net5.0\OpenDataEngine.pdb
+D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.AssemblyInfoInputs.cache
+D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.csproj.CoreCompileInputs.cache
+D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.dll
+D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.pdb
+D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.AssemblyInfo.cs
+D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.csprojAssemblyReference.cache

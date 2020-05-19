@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DotNetEnv;
 using OpenDataEngine;
 using OpenDataEngine.Query;
+using OpenDataEngine.Source;
 using OpenDataEngine.Strategy;
 
 namespace Example

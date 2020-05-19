@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {
+    ".NETCoreApp,Version=v5.0": {
       "BouncyCastle.NetCore/1.8.3": {
         "type": "package",
         "dependencies": {
@@ -5995,7 +5995,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": [
+    ".NETCoreApp,Version=v5.0": [
       "MySql.Data >= 8.0.20",
       "System.Linq.Async >= 4.1.1",
       "System.Linq.Async.Queryable >= 4.1.1",
@@ -6011,7 +6011,7 @@
     "version": "1.0.0",
     "restore": {
       "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
-      "projectName": "OpenDataEngine",
+      "projectName": "OpenDataEngine.Core",
       "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
       "packagesPath": "C:\\Users\\ChrisKruining\\.nuget\\packages\\",
       "outputPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\obj\\",
@@ -6027,7 +6027,7 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "netcoreapp3.1"
+        "net5.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\DevExpress 20.1\\Components\\System\\Components\\Packages": {},
@@ -6035,7 +6035,7 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "netcoreapp3.1": {
+        "net5.0": {
           "projectReferences": {}
         }
       },
@@ -6046,7 +6046,7 @@
       }
     },
     "frameworks": {
-      "netcoreapp3.1": {
+      "net5.0": {
         "dependencies": {
           "MySql.Data": {
             "target": "Package",

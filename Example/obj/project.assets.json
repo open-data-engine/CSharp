@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {
+    ".NETCoreApp,Version=v5.0": {
       "BouncyCastle.NetCore/1.8.3": {
         "type": "package",
         "dependencies": {
@@ -1732,9 +1732,9 @@
           "lib/netstandard1.3/System.Xml.XPath.XmlDocument.dll": {}
         }
       },
-      "OpenDataEngine/1.0.0": {
+      "OpenDataEngine.Core/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v3.1",
+        "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
           "MySql.Data": "8.0.20",
           "System.Linq.Async": "4.1.1",
@@ -1742,10 +1742,10 @@
           "System.Linq.Dynamic.Core": "1.1.1"
         },
         "compile": {
-          "bin/placeholder/OpenDataEngine.dll": {}
+          "bin/placeholder/OpenDataEngine.Core.dll": {}
         },
         "runtime": {
-          "bin/placeholder/OpenDataEngine.dll": {}
+          "bin/placeholder/OpenDataEngine.Core.dll": {}
         }
       }
     }
@@ -6034,16 +6034,16 @@
         "system.xml.xpath.xmldocument.nuspec"
       ]
     },
-    "OpenDataEngine/1.0.0": {
+    "OpenDataEngine.Core/1.0.0": {
       "type": "project",
       "path": "../OpenDataEngine/OpenDataEngine.csproj",
       "msbuildProject": "../OpenDataEngine/OpenDataEngine.csproj"
     }
   },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": [
+    ".NETCoreApp,Version=v5.0": [
       "DotNetEnv >= 1.4.0",
-      "OpenDataEngine >= 1.0.0"
+      "OpenDataEngine.Core >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -6071,7 +6071,7 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "netcoreapp3.1"
+        "net5.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\DevExpress 20.1\\Components\\System\\Components\\Packages": {},
@@ -6079,7 +6079,7 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "netcoreapp3.1": {
+        "net5.0": {
           "projectReferences": {
             "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {
               "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj"
@@ -6094,7 +6094,7 @@
       }
     },
     "frameworks": {
-      "netcoreapp3.1": {
+      "net5.0": {
         "dependencies": {
           "DotNetEnv": {
             "target": "Package",

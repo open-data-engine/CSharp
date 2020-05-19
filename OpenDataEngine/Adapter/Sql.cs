@@ -126,11 +126,6 @@ namespace OpenDataEngine.Adapter
                     }
                 }
 
-                if (result is Queryable<TResult> res)
-                {
-                    res.CustomProperties = record;
-                }
-
                 yield return result;
             }
         }

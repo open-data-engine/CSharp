@@ -16,16 +16,6 @@ namespace Example.Model
         public DateTime PublishedAt { get; set; }
     }
 
-    public class Cache<TModel> : Source<TModel>
-    {
-        public Cache() : base(null, null, null) {}
-    }
-
-    public class Database<TModel> : Source<TModel>
-    {
-        public Database(String host, String user, String pass, dynamic mapping) : base(new Mysql(host, user, pass), new Sql<TModel>(), new Table<TModel>(mapping)) {}
-    }
-
     public class TypicodeAPI<TModel> : Source<TModel>
     {
         public TypicodeAPI(String url, String resource, dynamic mapping) : base(new Http(url, new { Headers = new[] { ("Accept", "application/json"), ("Content-Type", "application/json"), ("Authorization", "Bearer {token}"), }, }), new Json<TModel>(), new Rest<TModel>(resource, mapping)) {}
