@@ -22,7 +22,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="D:\Github\open-data-engine\CSharp\OpenDataEngine\bin\x64\Debug\net5.0\OpenDataEngine.dll" target="lib\net5.0\OpenDataEngine.dll" />
+    <file src="D:\Github\open-data-engine\CSharp\OpenDataEngine\bin\x64\Debug\netcoreapp5.0\OpenDataEngine.dll" target="lib\net5.0\OpenDataEngine.dll" />
     <file src="D:\Github\open-data-engine\CSharp\LICENSE" target="LICENSE" />
   </files>
 </package>
