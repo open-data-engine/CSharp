@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using OpenDataEngine.Strategy;
 
 namespace OpenDataEngine.Query
@@ -26,5 +28,15 @@ namespace OpenDataEngine.Query
         }
 
         public static IAsyncQueryable<TModel> From<TModel>(this IAsyncQueryable<TModel> query, IAsyncQueryProvider source) => new Query<TModel>(source, query.Expression);
+
+        public static ValueTaskAwaiter<TModel> GetAwaiter<TModel>(this IAsyncQueryable<TModel> query)
+        {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            return query.Provider.ExecuteAsync<TModel>(query.Expression, CancellationToken.None).GetAwaiter();
+        }
     }
 }

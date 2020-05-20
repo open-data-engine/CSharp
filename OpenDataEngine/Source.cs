@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,16 +34,29 @@ namespace OpenDataEngine
             }
         }
 
-        public async ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token) => (TResult)ExecuteAsync(expression, token);
+        public override async ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token)
+        {
+            if (typeof(TResult) == typeof(IAsyncEnumerable<TModel>))
+            {
+                return (TResult)this.ExecuteMany(this.Prepare(expression), token);
+            }
 
-        public IAsyncEnumerable<TModel> ExecuteAsync(Expression expression, CancellationToken token) => this.Execute(this.Prepare(expression), token);
+            if (typeof(TResult) == typeof(TModel))
+            {
+                return (TResult)(Object)(await this.ExecuteSingle(this.Prepare(expression), token))!;
+            }
+
+            throw new Exception($"Unhandeled result type `{typeof(TResult)}`");
+        }
     }
 
     public static class SourceExtensions
     {
         public static (String command, (String, Object)[] arguments) Prepare<TModel>(this Source<TModel> source, Expression expression) => source.Adapter.Translate(source.CreateQuery<TModel>(expression));
 
-        public static IAsyncEnumerable<TModel> Execute<TModel>(this Source<TModel> source, (String command, (String, Object)[] arguments) statement, CancellationToken token) => 
+        public static IAsyncEnumerable<TModel> ExecuteMany<TModel>(this Source<TModel> source, (String command, (String, Object)[] arguments) statement, CancellationToken token) => 
             source.Adapter.From<TModel>(source.Connection.Execute(statement.command, statement.arguments, token), token);
+
+        public static ValueTask<TModel> ExecuteSingle<TModel>(this Source<TModel> source, (String command, (String, Object)[] arguments) statement, CancellationToken token) => source.ExecuteMany(statement, token).SingleAsync(token);
     }
 }

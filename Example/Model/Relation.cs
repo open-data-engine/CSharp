@@ -10,6 +10,6 @@ namespace Example.Model
 
         public String FirstName { get; set; }
         public String MiddleName { get; set; }
-        public String LastName { get; set; }
+        public String SurName { get; set; }
     }
 }

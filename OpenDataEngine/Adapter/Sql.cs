@@ -135,57 +135,67 @@ namespace OpenDataEngine.Adapter
             switch (expression)
             {
                 case UnaryExpression e:
-                    {
-                        String right = Recurse(e.Operand);
+                {
+                    String right = Recurse(e.Operand);
 
-                        return $"({e.NodeType.ToSql()} {right})";
-                    }
+                    return $"({e.NodeType.ToSql()} {right})";
+                }
 
                 case BinaryExpression e:
-                    {
-                        String right = Recurse(e.Right);
+                {
+                    String right = Recurse(e.Right);
 
-                        return $"({Recurse(e.Left)} {e.NodeType.ToSql(right == "NULL")} {right})";
+                    if (e.NodeType is ExpressionType.Coalesce)
+                    {
+                        if (right.StartsWith("COALESCE"))
+                        {
+                            right = right.Substring(right.IndexOf('(') + 1).TrimEnd(')');
+                        }
+
+                        return $"COALESCE({Recurse(e.Left)}, {right})";
                     }
+
+                    return $"{Recurse(e.Left)} {e.NodeType.ToSql(right == "NULL")} {right}";
+                }
 
                 case ConstantExpression e:
-                    {
-                        String constName = $"CONST_{_constCount++.Base52Encode()}";
-                        _arguments.Add((constName, e.Value));
+                {
+                    String constName = $"CONST_{_constCount++.Base52Encode()}";
+                    _arguments.Add((constName, e.Value));
 
-                        return $"@{constName}";
-                    }
+                    return $"@{constName}";
+                }
 
                 case MemberExpression e:
+                {
+                    if (!(e.Member is PropertyInfo) && !(e.Member is FieldInfo))
                     {
-                        if (!(e.Member is PropertyInfo) && !(e.Member is FieldInfo))
-                        {
-                            throw new Exception("Unhandeled member access, member is neither a property nor a field");
-                        }
-
-                        if (e.Member.DeclaringType == typeof(TModel))
-                        {
-                            return $"`{Source.Schema.ResolveProperty(e.Member.Name)}`";
-                        }
-
-                        _arguments.Add((e.Member.Name, e.GetValue()));
-                        return $"@{e.Member.Name}";
+                        throw new Exception("Unhandeled member access, member is neither a property nor a field");
                     }
+
+                    if (e.Member.DeclaringType == typeof(TModel))
+                    {
+                        return $"`{Source.Schema.ResolveProperty(e.Member.Name)}`";
+                    }
+
+                    _arguments.Add((e.Member.Name, e.GetValue()));
+                    return $"@{e.Member.Name}";
+                }
 
                 case MethodCallExpression e:
+                {
+                    switch (e.Method.Name)
                     {
-                        switch (e.Method.Name)
+                        case "Contains":
                         {
-                            case "Contains":
-                                {
-                                    return $"(__prop__ IN(__props__))";
-                                }
-
-                            default:
-                                throw new Exception($"'{e.Method.Name}' method calls in Where clause not supported at this point in time");
+                            return $"(__prop__ IN(__props__))";
                         }
 
+                        default:
+                            throw new Exception($"'{e.Method.Name}' method calls in Where clause not supported at this point in time");
                     }
+
+                }
 
                 default:
                     throw new Exception("Unhandeled expression in Where clause");

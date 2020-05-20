@@ -6,4 +6,3 @@ D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEn
 D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.dll
 D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.pdb
 D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.AssemblyInfo.cs
-D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\net5.0\OpenDataEngine.csprojAssemblyReference.cache

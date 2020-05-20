@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,6 +35,11 @@ namespace OpenDataEngine.Query
         {
             Provider = provider;
             Expression = expression;
+        }
+
+        public TaskAwaiter<TModel> GetAwaiter(CancellationToken cancellationToken)
+        {
+            return default;
         }
 
         public async IAsyncEnumerator<TModel> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
