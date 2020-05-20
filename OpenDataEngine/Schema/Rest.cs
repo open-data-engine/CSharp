@@ -14,5 +14,10 @@ namespace OpenDataEngine.Schema
             this.resource = resource;
             this.map = map;
         }
+
+        public override String ResolvePath(String path)
+        {
+            return path;
+        }
     }
 }

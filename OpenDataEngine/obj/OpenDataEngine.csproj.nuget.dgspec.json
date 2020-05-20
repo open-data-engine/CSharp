@@ -5,7 +5,7 @@
   },
   "projects": {
     "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {
-      "version": "1.0.0",
+      "version": "1.0.0.1",
       "restore": {
         "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
         "projectName": "OpenDataEngine.Core",
@@ -29,6 +29,7 @@
         "sources": {
           "C:\\Program Files (x86)\\DevExpress 20.1\\Components\\System\\Components\\Packages": {},
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\bin\\x64\\Debug\\netcoreapp5.0": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

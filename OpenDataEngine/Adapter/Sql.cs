@@ -58,17 +58,14 @@ namespace OpenDataEngine.Adapter
         {
             Visit(query.Expression);
 
-            String database = "FYN_1005_General";
-            String table = "Customer";
-
             if (_clauses.ContainsKey(Clause.Select) == false || (_clauses[Clause.Select]?.Count() ?? 0) == 0)
             {
-                _clauses.Add(Clause.Select, new List<String>{ $"SELECT `{database}`.`{table}`.*" });
+                _clauses.Add(Clause.Select, new List<String>{ $"SELECT {Source.Schema.ResolvePath("")}.*" });
             }
 
             if (_clauses.ContainsKey(Clause.From) == false || (_clauses[Clause.Select]?.Count() ?? 0) == 0)
             {
-                _clauses.Add(Clause.From, new List<String>{ $"FROM `{database}`.`{table}`" });
+                _clauses.Add(Clause.From, new List<String>{ $"FROM {Source.Schema.ResolvePath("")}" });
             }
 
             return (String.Join(' ', _clauses.TopoLogicalSort(Dependencies).Values.SelectMany(v => v)), _arguments.ToArray());
@@ -175,7 +172,7 @@ namespace OpenDataEngine.Adapter
 
                     if (e.Member.DeclaringType == typeof(TModel))
                     {
-                        return $"`{Source.Schema.ResolveProperty(e.Member.Name)}`";
+                        return $"{Source.Schema.ResolveProperty(e.Member.Name)}";
                     }
 
                     _arguments.Add((e.Member.Name, e.GetValue()));

@@ -8,6 +8,7 @@ namespace OpenDataEngine.Schema
     {
         public Source<TModel> Source { get; set; }
 
+        public String ResolvePath(String path);
         public String ResolveProperty(String property);
     }
 }
