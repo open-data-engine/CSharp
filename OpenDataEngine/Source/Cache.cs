@@ -1,6 +1,6 @@
 ﻿namespace OpenDataEngine.Source
 {
-    public class Cache<TModel> : Source<TModel>
+    public class Cache : Source
     {
         public Cache() : base(null, null, null) { }
     }

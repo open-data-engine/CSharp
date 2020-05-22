@@ -5,7 +5,7 @@ using OpenDataEngine.Query;
 
 namespace OpenDataEngine.Strategy
 {
-    public abstract class Base<TModel> : QueryProvider, IStrategy<TModel>
+    public abstract class Base : QueryProvider, IStrategy
     {
         public override abstract ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token);
     }

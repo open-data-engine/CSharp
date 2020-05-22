@@ -62,5 +62,8 @@ namespace OpenDataEngine
 
         // Resolves some laziness around anonymnous type, likely error prone
         public static T ValueOf<T>(this Object source, String property) => (T)source.GetType()?.GetProperty(property)?.GetValue(source, null)!;
+        public static Boolean Has(this Object source, String property) => source.GetType().GetProperty(property) != null;
+
+        public static TAttribute GetCustomAttribute<TAttribute>(this Type type) where TAttribute : System.Attribute => (TAttribute)(System.Attribute.GetCustomAttribute(type, typeof(TAttribute)) ?? throw new Exception("Could not resolve attribute"));
     }
 }

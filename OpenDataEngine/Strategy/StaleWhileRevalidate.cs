@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 
 namespace OpenDataEngine.Strategy
 {
-    public class StaleWhileRevalidate<TModel>: Base<TModel>
+    public class StaleWhileRevalidate: Base
     {
-        private readonly Source<TModel> _cache;
-        private readonly Source<TModel> _fallback;
+        private readonly Source.Source _cache;
+        private readonly Source.Source _fallback;
 
-        public StaleWhileRevalidate(Source<TModel> cache, Source<TModel> fallback)
+        public StaleWhileRevalidate(Source.Source cache, Source.Source fallback)
         {
             _cache = cache;
             _fallback = fallback;

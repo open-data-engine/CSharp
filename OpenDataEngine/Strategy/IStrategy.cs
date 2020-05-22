@@ -2,7 +2,7 @@
 
 namespace OpenDataEngine.Strategy
 {
-    public interface IStrategy<TModel> : IAsyncQueryProvider
+    public interface IStrategy : IAsyncQueryProvider
     {
         
     }

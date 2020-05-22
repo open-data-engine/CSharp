@@ -5,9 +5,9 @@ using System.Threading;
 
 namespace OpenDataEngine.Adapter
 {
-    public interface IAdapter<TModel>
+    public interface IAdapter
     {
-        public Source<TModel> Source { get; set; }
+        public Source.Source Source { get; set; }
 
         public (String Command, (String, Object)[] Arguments) Translate(IAsyncQueryable query);
         public IAsyncEnumerable<TResult> From<TResult>(IAsyncEnumerable<IDictionary<String, dynamic>> source, CancellationToken token);

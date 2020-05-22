@@ -30,7 +30,7 @@ namespace OpenDataEngine.Adapter
         Limit,
     }
 
-    public class Sql<TModel>: Base<TModel>
+    public class Sql: Base
     {
         private static readonly Dictionary<Clause, Clause[]> Dependencies = new Dictionary<Clause, Clause[]>
         {
@@ -82,15 +82,18 @@ namespace OpenDataEngine.Adapter
             {
                 case Select selectExpression:
                     clause = Clause.Select;
-                    sql = $"SELECT {String.Join(", ", selectExpression.Fields.Select(Recurse))}";
+                    sql = $"SELECT {String.Join(", ", selectExpression.Fields.Select(f => new SelectVisitor(this, _arguments, ref _constCount).Recurse(selectExpression.ModelType, f)))}";
 
                     break;
 
                 case Where whereExpression:
+                {
                     clause = Clause.Where;
-                    sql = $"{(_clauses.ContainsKey(Clause.Where) ? "AND" : "WHERE")} {Recurse(whereExpression.Body)}";
+                    using var visitor = new WhereVisitor(this, _arguments, ref _constCount);
+                    sql = $"{(_clauses.ContainsKey(Clause.Where) ? "AND" : "WHERE")} {visitor.Recurse(whereExpression.ModelType, whereExpression.Body)}";
 
                     break;
+                }
 
                 default:
                     throw new Exception($"Unhandeled clause '{expression.GetType()}'");
@@ -117,9 +120,11 @@ namespace OpenDataEngine.Adapter
 
                 foreach ((String key, dynamic value) in record)
                 {
-                    if (type.GetProperty(key) != null)
+                    String prop = Source.Schema.ReverseResolveProperty(key);
+
+                    if (type.GetProperty(prop) != null)
                     {
-                        type.GetProperty(key)?.SetValue(result, value, null);
+                        type.GetProperty(prop)?.SetValue(result, value, null);
                     }
                 }
 
@@ -127,32 +132,115 @@ namespace OpenDataEngine.Adapter
             }
         }
 
-        private String Recurse(Expression expression)
+    }
+
+    public class SelectVisitor: IDisposable
+    {
+        private readonly Sql _owner;
+        private readonly List<(String, Object)> _arguments;
+        private UInt64 _constCount;
+
+        public SelectVisitor(Sql owner, List<(String, Object)> arguments, ref UInt64 constCount)
+        {
+            _owner = owner;
+            _arguments = arguments;
+            _constCount = constCount;
+        }
+
+        public void Dispose()
+        {
+
+        }
+
+        public String Recurse(Type modelType, Expression expression)
+        {
+            switch (expression)
+            {
+                case ConstantExpression e:
+                {
+                    String constName = $"CONST_{_constCount++.Base52Encode()}";
+                    _arguments.Add((constName, e.Value));
+
+                    return $"@{constName}";
+                }
+
+                case MemberExpression e:
+                {
+                    if (!(e.Member is PropertyInfo) && !(e.Member is FieldInfo))
+                    {
+                        throw new Exception("Unhandeled member access, member is neither a property nor a field");
+                    }
+
+                    if (e.Member.DeclaringType == modelType)
+                    {
+                        return $"{_owner.Source.Schema.ResolveProperty(e.Member.Name, true)}";
+                    }
+
+                    _arguments.Add((e.Member.Name, e.GetValue()));
+                    return $"@{e.Member.Name}";
+                }
+
+                default:
+                    throw new Exception("Unhandeled expression in Where clause");
+            }
+        }
+    }
+
+    public class WhereVisitor: IDisposable
+    {
+        private readonly Sql _owner;
+        private readonly List<(String, Object)> _arguments;
+        private UInt64 _constCount;
+
+        public WhereVisitor(Sql owner, List<(String, Object)> arguments, ref UInt64 constCount)
+        {
+            _owner = owner;
+            _arguments = arguments;
+            _constCount = constCount;
+        }
+
+        public void Dispose()
+        {
+
+        }
+
+        public String Recurse(Type modelType, Expression expression)
         {
             switch (expression)
             {
                 case UnaryExpression e:
                 {
-                    String right = Recurse(e.Operand);
+                    String right = Recurse(modelType, e.Operand);
 
                     return $"({e.NodeType.ToSql()} {right})";
                 }
 
                 case BinaryExpression e:
                 {
-                    String right = Recurse(e.Right);
+                    String right = Recurse(modelType, e.Right);
 
-                    if (e.NodeType is ExpressionType.Coalesce)
+                    switch (e.NodeType)
                     {
-                        if (right.StartsWith("COALESCE"))
+                        case ExpressionType.Coalesce:
                         {
-                            right = right.Substring(right.IndexOf('(') + 1).TrimEnd(')');
+                            if (right.StartsWith("COALESCE"))
+                            {
+                                right = right.Substring(right.IndexOf('(') + 1).TrimEnd(')');
+                            }
+
+                            return $"COALESCE({Recurse(modelType, e.Left)}, {right})";
                         }
 
-                        return $"COALESCE({Recurse(e.Left)}, {right})";
-                    }
+                        case ExpressionType.OrElse:
+                        {
+                            return $"({Recurse(modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right})";
+                        }
 
-                    return $"{Recurse(e.Left)} {e.NodeType.ToSql(right == "NULL")} {right}";
+                        default:
+                        {
+                            return $"{Recurse(modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right}";
+                        }
+                    }
                 }
 
                 case ConstantExpression e:
@@ -170,9 +258,9 @@ namespace OpenDataEngine.Adapter
                         throw new Exception("Unhandeled member access, member is neither a property nor a field");
                     }
 
-                    if (e.Member.DeclaringType == typeof(TModel))
+                    if (e.Member.DeclaringType == modelType)
                     {
-                        return $"{Source.Schema.ResolveProperty(e.Member.Name)}";
+                        return $"{_owner.Source.Schema.ResolveProperty(e.Member.Name)}";
                     }
 
                     _arguments.Add((e.Member.Name, e.GetValue()));

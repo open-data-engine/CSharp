@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace OpenDataEngine.Adapter
 {
-    public class Json<TModel> : Base<TModel>
+    public class Json : Base
     {
         public override (String Command, (String, Object)[] Arguments) Translate(IAsyncQueryable query)
         {

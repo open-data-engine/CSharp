@@ -5,9 +5,9 @@ using OpenDataEngine.Schema;
 
 namespace OpenDataEngine.Source
 {
-    public class Database<TModel> : Source<TModel>
+    public class Database : Source
     {
         public Database(String host, String user, String pass, dynamic mapping, String database, String? table = null) : 
-            base(new Mysql(host, user, pass), new Sql<TModel>(), new Table<TModel>(mapping, database, table)) { }
+            base(new Mysql(host, user, pass), new Sql(), new Table(mapping, database, table)) { }
     }
 }

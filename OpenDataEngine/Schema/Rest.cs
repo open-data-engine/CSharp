@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OpenDataEngine.Schema
 {
-    public class Rest<TModel> : Base<TModel>
+    public class Rest : Base
     {
         private String resource;
         private dynamic map;

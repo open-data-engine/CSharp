@@ -6,10 +6,12 @@ namespace OpenDataEngine.Query.Clause
 {
     public class Select : Base
     {
+        public readonly Type ModelType;
         public readonly IReadOnlyCollection<Expression> Fields;
 
-        public Select(IReadOnlyCollection<Expression> fields)
+        public Select(Type type, IReadOnlyCollection<Expression> fields)
         {
+            ModelType = type;
             Fields = fields;
         }
     }

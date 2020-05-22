@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace OpenDataEngine.Strategy
 {
-    public class StraightForward<TModel> : Base<TModel>
+    public class StraightForward : Base
     {
-        private readonly Source<TModel> _source;
+        private readonly Source.Source _source;
 
-        public StraightForward(Source<TModel> source)
+        public StraightForward(Source.Source source)
         {
             _source = source;
         }

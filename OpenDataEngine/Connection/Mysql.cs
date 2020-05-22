@@ -55,7 +55,7 @@ namespace OpenDataEngine.Connection
         public Mysql(String dsn) : this(new MySqlConnectionStringBuilder(dsn)) {}
 
         private Boolean IsConnected => _connection != null && _connection.State == ConnectionState.Open;
-        private async Task Connect()
+        private async Task Connect(CancellationToken token)
         {
             if (_connection != null)
             {
@@ -66,7 +66,7 @@ namespace OpenDataEngine.Connection
             {
                 _connection = new MySqlConnection(_connectionStringBuilder.ToString());
 
-                await _connection.OpenAsync();
+                await _connection.OpenAsync(token);
             }
             catch (MySqlException exception)
             {
@@ -74,7 +74,7 @@ namespace OpenDataEngine.Connection
             }
         }
 
-        private async Task<DbDataReader> ExecuteQuery(String sql, (String, Object)[] arguments)
+        private async Task<DbDataReader> ExecuteQuery(String sql, (String, Object)[] arguments, CancellationToken token)
         {
             if (IsConnected == false)
             {
@@ -90,7 +90,7 @@ namespace OpenDataEngine.Connection
                     command.Parameters.AddWithValue($"@{key}", value);
                 }
 
-                return await command.ExecuteReaderAsync();
+                return await command.ExecuteReaderAsync(token);
             }
             catch (MySqlException exception)
             {
@@ -100,10 +100,10 @@ namespace OpenDataEngine.Connection
 
         public override async IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String sql, (String, Object)[] arguments, CancellationToken token)
         {
-            await Connect();
-            await using DbDataReader reader = await ExecuteQuery(sql, arguments);
+            await Connect(token);
+            await using DbDataReader reader = await ExecuteQuery(sql, arguments, token);
 
-            while (await reader.ReadAsync())
+            while (await reader.ReadAsync(token))
             {
                 yield return Enumerable.Range(0, reader.FieldCount).ToDictionary(reader.GetName, reader.GetValue);
             }

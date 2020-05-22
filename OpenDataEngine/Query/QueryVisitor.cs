@@ -30,7 +30,7 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Select");
                     }
 
-                    return new Select((selectExpression.Body as NewExpression)?.Arguments);
+                    return new Select(selectExpression.Parameters[0].Type, (selectExpression.Body as NewExpression)!.Arguments);
                     
                 case "Where":
                     // 'this' argument due to extension method
@@ -42,7 +42,7 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Where");
                     }
 
-                    return new Where(whereExpression.Body);
+                    return new Where(whereExpression.Parameters[0].Type, whereExpression.Body);
 
                 default:
                     throw new NotSupportedException("Operator could not be converted to String");
