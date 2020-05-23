@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using DotNetEnv;
 using OpenDataEngine;
 using OpenDataEngine.Attribute;
@@ -18,6 +19,8 @@ namespace Example.Model
         public String FirstName { get; set; }
         public String MiddleName { get; set; }
         public String SurName { get; set; }
+
+        public String FullName => String.Join(" ", new[] { FirstName, MiddleName, SurName }.Where(n => !String.IsNullOrEmpty(n)));
 
         public static new readonly (String Key, ISource Source)[] Sources =
         {

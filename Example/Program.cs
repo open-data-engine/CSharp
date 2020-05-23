@@ -1,5 +1,6 @@
 ﻿using Example.Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace Example
     {
         static async Task Main(string[] args)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            Console.WriteLine("Entered Program.Main");
 
             // Load .env file
             Env.Load();
@@ -38,10 +39,6 @@ namespace Example
             String user = Env.GetString("DB_USER");
             String pass = Env.GetString("DB_PASS");
 
-            Console.WriteLine($"app took {stopwatch.ElapsedMilliseconds}ms");
-            stopwatch.Reset();
-            stopwatch.Start();
-
             Table.DatabaseFormatter = s => s switch
             {
                 "General" => $"FYN_{companyId}_General",
@@ -53,82 +50,126 @@ namespace Example
             Database database = new Database(host, user, pass, new { ID = "Customer_ID", FirstName = "First_Name", MiddleName = "Middle_Name", SurName = "Sur_Name" }, "General", "Customer");
             Cache cache = new Cache();
             CacheFirst strategy = new CacheFirst(cache, database);
-
-            Console.WriteLine($"app took {stopwatch.ElapsedMilliseconds}ms");
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            List<Relation> relations = new List<Relation>();
-            try
-            {
-                await foreach (Relation relation in Relation.Select(b => new { b.ID, b.Username }).From(strategy).Where(b => b.Username != "" && (b.ID > 100 || b.Username == username)))
-                {
-                    relations.Add(relation);
-                }
-            }
-            catch(Exception exception)
-            {
-                Console.WriteLine("Exeption :: " + exception.Message);
-            }
-
-            Console.WriteLine($"1st query took {stopwatch.ElapsedMilliseconds}ms");
-            Console.WriteLine(String.Join("\n", relations.Select(relation => $"Relation({relation.ID}) is named '{relation.Username}'")));
-
-            stopwatch.Reset();
-            stopwatch.Start();
             
-            Relation rel = null;
-            try
-            {
-                rel = await Relation.Where(r => (r.Username ?? r.FirstName ?? r.MiddleName ?? r.SurName) == username);
-            }
-            catch(Exception exception)
-            {
-                Console.WriteLine("Exeption :: " + exception.Message);
-            }
+            // stopwatch.Restart();
+            //
+            // Relation rel = null;
+            // try
+            // {
+            //     rel = await Relation.Where(r => (r.Username ?? r.FirstName ?? r.MiddleName ?? r.SurName) == username);
+            // }
+            // catch(Exception exception)
+            // {
+            //     Console.WriteLine("Exeption :: " + exception.Message);
+            // }
 
-            Console.WriteLine($"2nd query took {stopwatch.ElapsedMilliseconds}ms");
-            Console.WriteLine($"Single Relation({rel.ID}) is named '{rel.Username}'");
-
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            List<Relation> rels = new List<Relation>();
-            try
-            {
-                IConnection connection = new Mysql(host, user, pass);
-                String sql = @"
-                    SELECT 
-                        `FYN_1005_General`.`Customer`.`Customer_ID` AS 'ID', 
-                        `FYN_1005_General`.`Customer`.`Username` 
-
-                    FROM `FYN_1005_General`.`Customer` 
-
-                    WHERE `FYN_1005_General`.`Customer`.`Username` != @CONST_1 
-                    AND (
-                        `FYN_1005_General`.`Customer`.`Customer_ID` > @CONST_0 
-                        OR `FYN_1005_General`.`Customer`.`Username` = @username
-                    )";
-                
-                await foreach (IDictionary<String, dynamic> record in connection.Execute(sql, new (String, Object)[] { ("username", username), ("CONST_0", 100), ("CONST_1", "") }, CancellationToken.None))
+            await Performance.MeasureAndSummerize(
+                10000, 
+                ("O.D.E. multi", async () =>
                 {
-                    rels.Add(new Relation
+                    List<Relation> relations = new List<Relation>();
+                    try
                     {
-                        ID = record["ID"],
-                        Username = record["Username"],
-                    });
-                }
-            }
-            catch (Exception exception)
+                        await foreach (Relation relation in Relation.Select(b => new { b.ID, b.FirstName, b.MiddleName, b.SurName }).From(strategy).Where(b => b.Username != "" && (b.ID > 100 || b.Username == username)))
+                        {
+                            relations.Add(relation);
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine("Exeption :: " + exception.Message);
+                    }
+                }),
+                ("Manual multi", async () =>
+                {
+                    String sql = "SELECT `FYN_1005_General`.`Customer`.`Customer_ID` AS 'ID', `FYN_1005_General`.`Customer`.`First_Name` AS 'FirstName', `FYN_1005_General`.`Customer`.`Middle_Name` AS 'MiddleName', `FYN_1005_General`.`Customer`.`Sur_Name` AS 'SurName' FROM `FYN_1005_General`.`Customer` WHERE `FYN_1005_General`.`Customer`.`Username` != @CONST_1 AND (`FYN_1005_General`.`Customer`.`Customer_ID` > @CONST_0 OR `FYN_1005_General`.`Customer`.`Username` = @username)";
+                    (String, Object)[] arguments = { ("username", username), ("CONST_0", 100), ("CONST_1", "") };
+
+                    IEnumerable<Relation> relations = await database.Connection
+                        .Execute(sql, arguments, CancellationToken.None)
+                        .Select(record => new Relation
+                        {
+                            ID = record["ID"],
+                            FirstName = record["FirstName"],
+                            MiddleName = record["MiddleName"],
+                            SurName = record["SurName"],
+                        })
+                        .ToListAsync();
+                }),
+                ("O.D.E. single", async () =>
+                {
+                    try
+                    {
+                        Relation relation = await Relation.Select(b => new { b.ID, b.FirstName, b.MiddleName, b.SurName }).From(strategy).Where(b => b.Username != "" && (b.ID > 100 || b.Username == username));
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine("Exeption :: " + exception.Message);
+                    }
+                }),
+                ("Manual single", async () =>
+                {
+                    String sql = "SELECT `FYN_1005_General`.`Customer`.`Customer_ID` AS 'ID', `FYN_1005_General`.`Customer`.`First_Name` AS 'FirstName', `FYN_1005_General`.`Customer`.`Middle_Name` AS 'MiddleName', `FYN_1005_General`.`Customer`.`Sur_Name` AS 'SurName' FROM `FYN_1005_General`.`Customer` WHERE `FYN_1005_General`.`Customer`.`Username` != @CONST_1 AND (`FYN_1005_General`.`Customer`.`Customer_ID` > @CONST_0 OR `FYN_1005_General`.`Customer`.`Username` = @username) LIMIT 1";
+                    (String, Object)[] arguments = { ("username", username), ("CONST_0", 100), ("CONST_1", "") };
+
+                    Relation relation = await database.Connection
+                        .Execute(sql, arguments, CancellationToken.None)
+                        .Select(record => new Relation
+                        {
+                            ID = record["ID"],
+                            FirstName = record["FirstName"],
+                            MiddleName = record["MiddleName"],
+                            SurName = record["SurName"],
+                        }).SingleAsync();
+                })
+            );
+
+            Console.ReadLine();
+        }
+    }
+
+    public static class Performance
+    {
+        public static async Task MeasureAndSummerize(UInt32 iterations, params (String Topic, Func<Task> Action)[] topics)
+        {
+            (String, Decimal[])[] measurements = await topics.ToAsyncEnumerable().SelectAwait(async t => (t.Topic, await Measure(iterations, t.Action))).ToArrayAsync();
+
+            Summerize(iterations, measurements);
+        }
+
+        public static async Task<Decimal[]> Measure(UInt32 iterations, Func<Task> action)
+        {
+            Decimal[] measurements = new Decimal[iterations];
+            Stopwatch stopwatch = new Stopwatch();
+
+            // Warmup
+            await action.Invoke();
+
+            for (UInt32 i = 0; i < iterations; i++)
             {
-                Console.WriteLine("Exeption :: " + exception.Message);
+                Console.Write($"\r{i} / {iterations}");
+
+                stopwatch.Restart();
+
+                await action.Invoke();
+
+                measurements[i] = stopwatch.ElapsedMilliseconds;
             }
 
-            Console.WriteLine($"3rd query took {stopwatch.ElapsedMilliseconds}ms");
-            Console.WriteLine(String.Join("\n", rels.Select(relation => $"Relation({relation.ID}) is named '{relation.Username}'")));
+            Console.WriteLine($"\rDone\t\t");
 
-            stopwatch.Reset();
-            stopwatch.Start();
+            return measurements;
+        }
+
+        public static void Summerize(UInt32 length, params (String Topic, Decimal[] Measurments)[] topics)
+        {
+            List<Decimal> sums = topics.Select(t => t.Measurments.Sum()).ToList();
+            Decimal totalSum = sums.Sum();
+
+            Console.WriteLine($"\nRan {length} iterations\n{String.Join(" \t", topics.Select(t => t.Topic))}\tRatios");
+            String summedRatios = String.Join(":", sums.Select(m => $"{(m / totalSum * 100):##}"));
+            Console.WriteLine($"{String.Join(" \t", sums.Select(s => $"{s:00.00}ms"))} \t{summedRatios:00.00} \tSummed");
+            Console.WriteLine($"{String.Join(" \t", topics.Select(t => t.Measurments.Average()).Select(s => $"{s:00.00}ms"))} \t- \tAverage");
         }
     }
 }
