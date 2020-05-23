@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
@@ -55,7 +56,7 @@ namespace OpenDataEngine.Connection
         public Mysql(String dsn) : this(new MySqlConnectionStringBuilder(dsn)) {}
 
         private Boolean IsConnected => _connection != null && _connection.State == ConnectionState.Open;
-        private async Task Connect(CancellationToken token)
+        public override async Task Connect(CancellationToken token)
         {
             if (_connection != null)
             {
@@ -114,7 +115,7 @@ namespace OpenDataEngine.Connection
     {
         private static String? message(Int32 number) => number switch
         {
-            0 => "Can't get hostname for your address",
+            // 0 => "Can't get hostname for your address",
             1042 => "Can't create IP socket. This could be caused by closing and opening connections to fast",
             1081 => "No connection could be astablished to the database",
             1044 => "Access denied",

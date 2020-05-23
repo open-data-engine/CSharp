@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -42,6 +43,7 @@ namespace OpenDataEngine.Source
                 return await this.ExecuteSingle<TResult>(this.Prepare<TResult>(expression), token);
             }
             
+            Stopwatch stopwatch = Stopwatch.StartNew();
             Type modelType = typeof(TResult).GetGenericArguments()[0];
             Object prepared = typeof(SourceExtensions)
                 .GetMethod("Prepare", BindingFlags.Static | BindingFlags.Public)
@@ -62,7 +64,15 @@ namespace OpenDataEngine.Source
         public static IAsyncEnumerable<TModel> ExecuteMany<TModel>(this Source source, (String command, (String, Object)[] arguments) statement, CancellationToken token) => 
             source.Adapter.From<TModel>(source.Connection.Execute(statement.command, statement.arguments, token), token);
 
-        public static ValueTask<TModel> ExecuteSingle<TModel>(this Source source, (String command, (String, Object)[] arguments) statement, CancellationToken token) => 
-            source.ExecuteMany<TModel>(statement, token).SingleAsync(token);
+        public static async ValueTask<TModel> ExecuteSingle<TModel>(this Source source, (String command, (String, Object)[] arguments) statement, CancellationToken token)
+        {
+            IAsyncEnumerator<TModel> enumerator = source.ExecuteMany<TModel>(statement, token).GetAsyncEnumerator(token);
+            
+            await enumerator.MoveNextAsync();
+            TModel result = enumerator.Current;
+            await enumerator.DisposeAsync();
+
+            return result;
+        }
     }
 }

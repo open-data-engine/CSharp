@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -56,6 +57,9 @@ namespace OpenDataEngine.Adapter
         
         public override(String Command, (String, Object)[] Arguments) Translate(IAsyncQueryable query)
         {
+            _clauses.Clear();
+            _arguments.Clear();
+
             Visit(query.Expression);
 
             if (_clauses.ContainsKey(Clause.Select) == false || (_clauses[Clause.Select]?.Count() ?? 0) == 0)
@@ -67,7 +71,7 @@ namespace OpenDataEngine.Adapter
             {
                 _clauses.Add(Clause.From, new List<String>{ $"FROM {Source.Schema.ResolvePath("")}" });
             }
-
+            
             return (String.Join(' ', _clauses.TopoLogicalSort(Dependencies).Values.SelectMany(v => v)), _arguments.ToArray());
         }
 
@@ -131,7 +135,6 @@ namespace OpenDataEngine.Adapter
                 yield return result;
             }
         }
-
     }
 
     public class SelectVisitor: IDisposable

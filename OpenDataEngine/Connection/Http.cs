@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace OpenDataEngine.Connection
 {
@@ -13,6 +14,11 @@ namespace OpenDataEngine.Connection
         {
             this.endpoint = endpoint;
             this.config = config;
+        }
+
+        public override Task Connect(CancellationToken token)
+        {
+            throw new NotImplementedException();
         }
 
         public override IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String command, (String, Object)[] arguments, CancellationToken token)
