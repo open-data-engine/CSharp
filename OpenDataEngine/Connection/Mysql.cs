@@ -88,7 +88,20 @@ namespace OpenDataEngine.Connection
 
                 foreach ((String key, Object value) in arguments)
                 {
-                    command.Parameters.AddWithValue($"@{key}", value);
+                    // Note(Chris Kruining) This is a dirty hack to work arround the lack luster parsing of the adapter.
+                    if (command.Parameters.Contains($"@{key}"))
+                    {
+                        continue;
+                    }
+
+                    Object? v = value;
+
+                    if (v.GetType().IsEnum)
+                    {
+                        v = Enum.GetName(v.GetType(), v);
+                    }
+
+                    command.Parameters.AddWithValue($"@{key}", v);
                 }
 
                 return await command.ExecuteReaderAsync(token);

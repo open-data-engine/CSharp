@@ -42,6 +42,23 @@ namespace OpenDataEngine.Query
             return new Query<TModel>(source, query.Expression);
         }
 
+        public static IAsyncQueryable<TModel> With<TModel, TRelation>(this IAsyncQueryable<TModel> query, TRelation relation, String? name = null)
+        {
+            Type type = typeof(TModel);
+            PropertyInfo? prop = name != null 
+                ? type.GetProperty(name) 
+                : type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Single(p => p.PropertyType == typeof(TRelation));
+
+            if (prop == null)
+            {
+                throw new Exception("Unable to resolve relation");
+            }
+
+            // TODO(Chris Kruining) prepare `Join` so that the related data is fetched
+
+            return query;
+        }
+
         public static ValueTaskAwaiter<TModel> GetAwaiter<TModel>(this IAsyncQueryable<TModel> query)
         {
             if (query == null)
@@ -49,7 +66,7 @@ namespace OpenDataEngine.Query
                 throw new ArgumentNullException(nameof(query));
             }
 
-            return query.Provider.ExecuteAsync<TModel>(query.Expression, CancellationToken.None).GetAwaiter();
+            return query.Take(1).Provider.ExecuteAsync<TModel>(query.Expression, CancellationToken.None).GetAwaiter();
         }
     }
 }

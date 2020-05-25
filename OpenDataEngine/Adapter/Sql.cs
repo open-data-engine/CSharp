@@ -99,6 +99,17 @@ namespace OpenDataEngine.Adapter
                     break;
                 }
 
+                // TODO(Chris Kruining) due to the nature of linq the limit can be split up into multiple clauses, find a way to combine these
+                case Limit limitExpression:
+                {
+                    clause = Clause.Limit;
+                    sql = limitExpression.Offset != null 
+                        ? $"LIMIT {limitExpression.Offset}, {limitExpression.Amount}" 
+                        : $"LIMIT {limitExpression.Amount}";
+
+                    break;
+                }
+
                 default:
                     throw new Exception($"Unhandeled clause '{expression.GetType()}'");
             }
@@ -124,11 +135,27 @@ namespace OpenDataEngine.Adapter
 
                 foreach ((String key, dynamic value) in record)
                 {
-                    String prop = Source.Schema.ReverseResolveProperty(key);
-
-                    if (type.GetProperty(prop) != null)
+                    try
                     {
-                        type.GetProperty(prop)?.SetValue(result, value, null);
+                        PropertyInfo? property = type.GetProperty(Source.Schema.ReverseResolveProperty(key));
+
+                        if (property == null)
+                        {
+                            continue;
+                        }
+
+                        Object? v = value;
+
+                        if (property.PropertyType.IsEnum)
+                        {
+                            v = Enum.Parse(property.PropertyType, (String)v, true);
+                        }
+
+                        property.SetValue(result, v, null);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new Exception($"failed to map field '{key}' to property, reason: '{exception.Message}'", exception);
                     }
                 }
 
@@ -215,11 +242,30 @@ namespace OpenDataEngine.Adapter
                 {
                     String right = Recurse(modelType, e.Operand);
 
+                    // TODO(Chris Kruining)
+                    // I doubt this is a proper implementation,
+                    // but the documentation of C# says that 'Convert'
+                    // is for type casting, since the right is
+                    // a field selection this is not applicable
+                    // (but the right does not have to be a field selection)
+                    if (e.NodeType == ExpressionType.Convert)
+                    {
+                        return right;
+                    }
+
                     return $"({e.NodeType.ToSql()} {right})";
                 }
 
                 case BinaryExpression e:
                 {
+                    // NOTE(Chris Kruining) Nasty hack to support enums as string in mysql
+                    if (e.Left is UnaryExpression eLeft && eLeft.Operand.Type.IsEnum && e.Right is ConstantExpression eRight)
+                    {
+                        String constName = $"CONST_{_constCount++.Base52Encode()}";
+                        _arguments.Add((constName, Enum.GetName(eLeft.Operand.Type, eRight.Value)!));
+                        return $"{Recurse(modelType, e.Left)} {e.NodeType.ToSql()} @{constName}";
+                    }
+
                     String right = Recurse(modelType, e.Right);
 
                     switch (e.NodeType)
@@ -276,7 +322,7 @@ namespace OpenDataEngine.Adapter
                     {
                         case "Contains":
                         {
-                            return $"(__prop__ IN(__props__))";
+                            return $"{Recurse(modelType, e.Arguments[0])} IN([Parse_what_is_in_front_of_contains])";
                         }
 
                         default:
@@ -330,7 +376,8 @@ namespace OpenDataEngine.Adapter
             ExpressionType.LessThanOrEqual => "<=",
             ExpressionType.GreaterThan => ">",
             ExpressionType.GreaterThanOrEqual => ">=",
-            _ => throw new Exception("Unhandeled unary node type"),
+            ExpressionType.Convert => "",
+            _ => throw new Exception($"Unhandeled unary node type, '{expressionType}'"),
         };
 
         public static String ToSql(this Object subject, Type type)

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>OpenDataEngine.Core</id>
+    <version>1.0.0.12</version>
+    <authors>Chris Kruining</authors>
+    <owners>Chris Kruining</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">LICENSE</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <projectUrl>https://github.com/open-data-engine/CSharp</projectUrl>
+    <description>Package Description</description>
+    <copyright>MIT</copyright>
+    <repository type="Github" url="https://github.com/open-data-engine/CSharp" />
+    <dependencies>
+      <group targetFramework=".NETCoreApp5.0">
+        <dependency id="MySql.Data" version="8.0.20" exclude="Build,Analyzers" />
+        <dependency id="System.Linq.Async" version="4.1.1" exclude="Build,Analyzers" />
+        <dependency id="System.Linq.Async.Queryable" version="4.1.1" exclude="Build,Analyzers" />
+        <dependency id="System.Linq.Dynamic.Core" version="1.1.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="D:\Github\open-data-engine\CSharp\OpenDataEngine\bin\x64\Debug\netcoreapp5.0\OpenDataEngine.dll" target="lib\net5.0\OpenDataEngine.dll" />
+    <file src="D:\Github\open-data-engine\CSharp\LICENSE" target="LICENSE" />
+  </files>
+</package>

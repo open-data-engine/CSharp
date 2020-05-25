@@ -19,36 +19,44 @@ namespace OpenDataEngine.Query
                 return base.VisitMethodCall(node);
             }
 
+            // 'this' argument due to extension method
+            Visit(node.Arguments[0]);
+
             switch (node.Method.Name)
             {
                 case "Select":
-                    // 'this' argument due to extension method
-                    Visit(node.Arguments[0]);
-
-                    if (!(StripQuotes(node.Arguments[1]) is LambdaExpression selectExpression))
+                {
+                    if (!(StripQuotes(node.Arguments[1]) is LambdaExpression body))
                     {
                         throw new Exception("Unable to visit the argument of Select");
                     }
 
-                    return new Select(selectExpression.Parameters[0].Type, (selectExpression.Body as NewExpression)!.Arguments);
-                    
+                    return new Select(body.Parameters[0].Type, (body.Body as NewExpression)!.Arguments);
+                }
+
                 case "Where":
-                    // 'this' argument due to extension method
-                    Visit(node.Arguments[0]);
-
-
-                    if (!(StripQuotes(node.Arguments[1]) is LambdaExpression whereExpression))
+                {
+                    if (!(StripQuotes(node.Arguments[1]) is LambdaExpression body))
                     {
                         throw new Exception("Unable to visit the argument of Where");
                     }
 
-                    return new Where(whereExpression.Parameters[0].Type, whereExpression.Body);
+                    return new Where(body.Parameters[0].Type, body.Body);
+                }
+
+                case "Take":
+                {
+                    return new Limit(node.Arguments[1], node.Arguments[2] ?? null);
+                }
+
+                case "Skip":
+                {
+                    return new Limit(null, node.Arguments[1]);
+                }
 
                 default:
                     throw new NotSupportedException("Operator could not be converted to String");
             }
-
-            return node;
         }
 
         private static Expression StripQuotes(Expression e)
