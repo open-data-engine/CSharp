@@ -6032,7 +6032,7 @@
       "sources": {
         "C:\\Program Files (x86)\\DevExpress 20.1\\Components\\System\\Components\\Packages": {},
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\bin\\x64\\Debug\\netcoreapp5.0": {},
+        "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\bin\\x64\\Debug": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
