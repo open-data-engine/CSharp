@@ -13,9 +13,7 @@ namespace OpenDataEngine.Query
 {
     public abstract class Queryable<TModel>
     {
-        public static ISource? GetSource(String key) => Sources.FirstOrDefault(kvp => kvp.Key == key).Source;
-        public static IStrategy? GetStrategy(String key) => Strategies.FirstOrDefault(kvp => kvp.Key == key).Strategy;
-
+        public static IAsyncQueryable<TModel> From(String source) => new Query<TModel>().From(source);
         public static IAsyncQueryable<TModel> From(IAsyncQueryProvider source) => new Query<TModel>().From(source);
         public static IAsyncQueryable<TModel> Select(Expression<Func<TModel, dynamic>> expression) => new Query<TModel>().Select(expression);
         public static IAsyncQueryable<TModel> Where(Expression<Func<TModel, Boolean>> expression) => new Query<TModel>().Where(expression);
@@ -24,9 +22,6 @@ namespace OpenDataEngine.Query
         public static IAsyncQueryable<TModel> Limit(Int32 take, Int32 skip = 0) => new Query<TModel>().Skip(skip).Take(take);
         public static IAsyncQueryable<TModel> OrderBy(Expression<Func<TModel, dynamic>> expression) => new Query<TModel>().OrderBy(expression);
         public static IAsyncQueryable<TModel> With<TRelation>(TRelation relation, String? name = null) => new Query<TModel>().With(relation, name);
-
-        public static (String Key, ISource Source)[] Sources { get; protected set; } = new (String Key, ISource Source)[0];
-        public static (String Key, IStrategy Strategy)[] Strategies { get; protected set; } = new (String Key, IStrategy Strategy)[0];
     }
 
     public class Query<TModel> : IOrderedAsyncQueryable<TModel>
@@ -37,7 +32,9 @@ namespace OpenDataEngine.Query
 
         public Query()
         {
-            Provider = typeof(TModel).GetCustomAttribute<StrategiesAttribute>()["default"];
+            Type modelType = typeof(TModel);
+
+            Provider = (IAsyncQueryProvider?)modelType.GetCustomAttribute<StrategiesAttribute>()?["default"] ?? new QueryProvider();
             Expression = Expression.Parameter(typeof(IAsyncQueryable<TModel>), "queryable");
         }
 
@@ -45,11 +42,6 @@ namespace OpenDataEngine.Query
         {
             Provider = provider;
             Expression = expression;
-        }
-
-        public TaskAwaiter<TModel> GetAwaiter(CancellationToken cancellationToken)
-        {
-            return default;
         }
 
         public async IAsyncEnumerator<TModel> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())

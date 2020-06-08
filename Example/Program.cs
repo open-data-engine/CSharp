@@ -62,7 +62,7 @@ namespace Example
             Relation relation = await Relation.With(book).Where(r => r.ID == 10000321 && r.Status == Status.Active);
 
             await Performance.MeasureAndSummerize(
-                10000, 
+                1000, 
                 ("O.D.E. multi", async () =>
                 {
                     List<Relation> relations = new List<Relation>();
@@ -163,11 +163,15 @@ namespace Example
         {
             List<Decimal> sums = topics.Select(t => t.Measurments.Sum()).ToList();
             Decimal totalSum = sums.Sum();
+            String summedRatios = String.Join(":", sums.Select(m => $"{(m / totalSum * 100):##}"));
+
+            List<Decimal> averages = topics.Select(t => t.Measurments.Average()).ToList();
+            Decimal totalAverages = averages.Sum();
+            String averagedRatios = String.Join(":", averages.Select(m => $"{(m / totalAverages * 100):##}"));
 
             Console.WriteLine($"\nRan {length} iterations\n{String.Join(" \t", topics.Select(t => t.Topic))}\tRatios");
-            String summedRatios = String.Join(":", sums.Select(m => $"{(m / totalSum * 100):##}"));
             Console.WriteLine($"{String.Join(" \t", sums.Select(s => $"{s:00.00}ms"))} \t{summedRatios:00.00} \tSummed");
-            Console.WriteLine($"{String.Join(" \t", topics.Select(t => t.Measurments.Average()).Select(s => $"{s:00.00}ms"))} \t- \tAverage");
+            Console.WriteLine($"{String.Join(" \t", averages.Select(s => $"{s:00.00}ms"))} \t{averagedRatios:00.00} \tAverage");
         }
     }
 }

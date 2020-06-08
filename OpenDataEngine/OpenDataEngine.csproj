@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp5.0</TargetFramework>
@@ -24,9 +24,9 @@
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	<LangVersion>8</LangVersion>
 	<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-	<Version>1.0.0.12</Version>
-	<AssemblyVersion>1.0.0.12</AssemblyVersion>
-	<FileVersion>1.0.0.12</FileVersion>
+	<Version>1.0.0.13</Version>
+	<AssemblyVersion>1.0.0.13</AssemblyVersion>
+	<FileVersion>1.0.0.13</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="8.0.20" />
+    <PackageReference Include="MySqlConnector" Version="0.66.0" />
     <PackageReference Include="System.Linq.Async" Version="4.1.1" />
     <PackageReference Include="System.Linq.Async.Queryable" Version="4.1.1" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.1" />

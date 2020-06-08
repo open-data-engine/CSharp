@@ -11,7 +11,7 @@ namespace OpenDataEngine.Query
     public static class AsyncQueryableExtensions
     {
         private static MethodInfo? selectMethodInfo;
-        private static MethodInfo? SelectMethod(Type type) => (selectMethodInfo ??= new Func<IAsyncQueryable<Object>, Expression<Func<Object, Object>>, IAsyncQueryable<Object>>(Select).GetMethodInfo()!.GetGenericMethodDefinition()).MakeGenericMethod(type);
+        private static MethodInfo SelectMethod(Type type) => (selectMethodInfo ??= new Func<IAsyncQueryable<Object>, Expression<Func<Object, Object>>, IAsyncQueryable<Object>>(Select).GetMethodInfo()!.GetGenericMethodDefinition()).MakeGenericMethod(type);
         
         public static IAsyncQueryable<TModel> Select<TModel>(this IAsyncQueryable<TModel> query, Expression<Func<TModel, dynamic>> expression)
         {
@@ -27,6 +27,20 @@ namespace OpenDataEngine.Query
             return query.Provider.CreateQuery<TModel>(Expression.Call(SelectMethod(typeof(TModel)), query.Expression, expression));
         }
 
+        public static IAsyncQueryable<TModel> From<TModel>(this IAsyncQueryable<TModel> query, String source)
+        {
+            if (query == null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            
+            return new Query<TModel>(default, query.Expression);
+        }
         public static IAsyncQueryable<TModel> From<TModel>(this IAsyncQueryable<TModel> query, IAsyncQueryProvider source)
         {
             if (query == null)

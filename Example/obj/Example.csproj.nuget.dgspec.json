@@ -75,7 +75,7 @@
       }
     },
     "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {
-      "version": "1.0.0.12",
+      "version": "1.0.0.13",
       "restore": {
         "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
         "projectName": "OpenDataEngine.Core",
@@ -116,9 +116,9 @@
       "frameworks": {
         "net5.0": {
           "dependencies": {
-            "MySql.Data": {
+            "MySqlConnector": {
               "target": "Package",
-              "version": "[8.0.20, )"
+              "version": "[0.66.0, )"
             },
             "System.Linq.Async": {
               "target": "Package",

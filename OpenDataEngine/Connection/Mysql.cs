@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Globalization;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
@@ -37,9 +33,7 @@ namespace OpenDataEngine.Connection
             ConnectionTimeout = ConnectionTimeout,
             DefaultCommandTimeout = CommandTimeout,
             ConnectionReset = false,
-            CacheServerProperties = true,
             Keepalive = KeepAlive,
-            ProcedureCacheSize = 0,
             TreatTinyAsBoolean = true,
             IgnorePrepare = false,
             AllowUserVariables = true,
@@ -112,7 +106,7 @@ namespace OpenDataEngine.Connection
             }
         }
 
-        public override async IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String sql, (String, Object)[] arguments, CancellationToken token)
+        public override async IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String sql, (String, Object)[] arguments, [EnumeratorCancellation] CancellationToken token)
         {
             await Connect(token);
             await using DbDataReader reader = await ExecuteQuery(sql, arguments, token);
