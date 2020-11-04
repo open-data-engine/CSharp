@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,11 +23,11 @@ namespace OpenDataEngine.Strategy
             _source = source;
         }
 
-        public override ValueTask<TModel> ExecuteAsync<TModel>(Expression expression, CancellationToken token)
+        public override ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token)
         {
-            ISource source = _source ?? typeof(TModel).GetCustomAttribute<SourcesAttribute>()?[_sourceKey!] ?? throw new Exception("No source defined");
+            ISource source = _source ?? GetModelType<TResult>().GetCustomAttribute<SourcesAttribute>()?[_sourceKey!] ?? throw new Exception("No source defined");
 
-            return source.ExecuteAsync<TModel>(expression, token);
+            return source.ExecuteAsync<TResult>(expression, token);
         }
     }
 }

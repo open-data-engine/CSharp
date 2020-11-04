@@ -19,3 +19,6 @@ D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp5.0\Example.dl
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp5.0\Example.pdb
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp5.0\Example.genruntimeconfig.cache
 D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\MySqlConnector.dll
+D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp5.0\Example.GeneratedMSBuildEditorConfig.editorconfig
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\ref\Example.dll
+D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp5.0\ref\Example.dll

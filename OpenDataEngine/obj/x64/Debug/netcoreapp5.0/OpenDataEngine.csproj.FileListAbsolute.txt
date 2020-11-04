@@ -7,6 +7,5 @@ D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\netcoreapp5.0\Ope
 D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\netcoreapp5.0\OpenDataEngine.pdb
 D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\netcoreapp5.0\OpenDataEngine.csproj.CoreCompileInputs.cache
 D:\Github\open-data-engine\CSharp\OpenDataEngine\bin\x64\Debug\netcoreapp5.0\ref\OpenDataEngine.dll
-D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\netcoreapp5.0\OpenDataEngine.csprojAssemblyReference.cache
 D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\netcoreapp5.0\OpenDataEngine.GeneratedMSBuildEditorConfig.editorconfig
 D:\Github\open-data-engine\CSharp\OpenDataEngine\obj\x64\Debug\netcoreapp5.0\ref\OpenDataEngine.dll
