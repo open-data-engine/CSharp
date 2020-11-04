@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using OpenDataEngine.Strategy;
 
 namespace OpenDataEngine.Query
@@ -82,5 +84,8 @@ namespace OpenDataEngine.Query
 
             return query.Take(1).Provider.ExecuteAsync<TModel>(query.Expression, CancellationToken.None).GetAwaiter();
         }
+
+        public static async ValueTask<TModel[]?> ToArrayAsync<TModel>(this IAsyncQueryable<TModel> query) => (await query.ToListAsync())?.ToArray();
+        public static async ValueTask<List<TModel>?> ToListAsync<TModel>(this IAsyncQueryable<TModel> query) => await AsyncEnumerable.ToListAsync(query);
     }
 }

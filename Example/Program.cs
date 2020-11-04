@@ -48,25 +48,22 @@ namespace Example
             };
 
             Database database = new Database(host, user, pass, new { ID = "Customer_ID", FirstName = "First_Name", MiddleName = "Middle_Name", SurName = "Sur_Name" }, "General", "Customer");
-            Cache cache = new Cache();
-            CacheFirst strategy = new CacheFirst(cache, database);
-            Book book = new Book
-            {
-                Author = new Relation
-                {
-                    FirstName = "Chris Kruining",
-                },
-                Title = "API's for dummies",
-                Publisher = "FYN Software",
-                PublishedAt = DateTime.Now,
-            };
-
-            Relation relationWithRelationalFilters = await Relation.With(book).Where(
-                r => r.ID == 10000321 
-                    && r.Status == Status.Active 
-                    && r.Book.Title == "API's for dummies" 
-                    && r.Friends.Any(f => f.SurName == "Kruining")
-            );
+            // Book book = new Book
+            // {
+            //     Author = new Relation
+            //     {
+            //         FirstName = "Chris Kruining",
+            //     },
+            //     Title = "API's for dummies",
+            //     Publisher = "FYN Software",
+            //     PublishedAt = DateTime.Now,
+            // };
+            // Relation relationWithRelationalFilters = await Relation.With(book).Where(
+            //     r => r.ID == 10000321 
+            //         && r.Status == Status.Active 
+            //         && r.Book.Title == "API's for dummies" 
+            //         && r.Friends.Any(f => f.SurName == "Kruining")
+            // );
 
             await Performance.MeasureAndSummarize(
                 1000, 
@@ -75,7 +72,7 @@ namespace Example
                     List<Relation> relations = new List<Relation>();
                     try
                     {
-                        await foreach (Relation relation in Relation.Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName }).From(strategy).Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username)))
+                        await foreach (Relation relation in Relation.Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName }).Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username)))
                         {
                             relations.Add(relation);
                         }
@@ -107,7 +104,6 @@ namespace Example
                     {
                         Relation relation = await Relation
                             .Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName })
-                            .From(strategy)
                             .Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username));
                     }
                     catch (Exception exception)

@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenDataEngine.Attribute;
-using OpenDataEngine.Query;
 using OpenDataEngine.Source;
 
 namespace OpenDataEngine.Strategy
@@ -26,14 +26,14 @@ namespace OpenDataEngine.Strategy
             _fallback = fallback;
         }
 
-        public ISource? Resolve<TModel>(String key) => key switch
+        public ISource? Resolve(Type model, String key) => key switch
         {
-            "cache" => _cache ?? typeof(TModel).GetCustomAttribute<SourcesAttribute>()?[_cacheKey!],
-            "fallback" => _fallback ?? typeof(TModel).GetCustomAttribute<SourcesAttribute>()?[_fallbackKey!],
+            "cache" => _cache ?? model.GetCustomAttribute<SourcesAttribute>()?[_cacheKey!],
+            "fallback" => _fallback ?? model.GetCustomAttribute<SourcesAttribute>()?[_fallbackKey!],
             _ => throw new Exception("Unhandled source name"),
         };
 
-        public override ValueTask<TModel> ExecuteAsync<TModel>(Expression expression, CancellationToken token)
+        public override ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token)
         {
             if (_cache == null && _cacheKey == null)
             {
@@ -45,9 +45,9 @@ namespace OpenDataEngine.Strategy
                 throw new Exception("No deduction of 'fallback' source possible, did you forget to pass either a `Source` or a (`String`)key?");
             }
 
-            ISource source = Resolve<TModel>("fallback") ?? throw new Exception("Couldn't resolve 'fallback' source");
+            ISource source = Resolve(GetModelType<TResult>(), "fallback") ?? throw new Exception("Couldn't resolve 'fallback' source");
 
-            return source.ExecuteAsync<TModel>(expression, token);
+            return source.ExecuteAsync<TResult>(expression, token);
         }
     }
 }

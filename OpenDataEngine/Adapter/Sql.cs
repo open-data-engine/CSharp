@@ -138,20 +138,19 @@ namespace OpenDataEngine.Adapter
                     try
                     {
                         PropertyInfo? property = type.GetProperty(Source.Schema.ReverseResolveProperty(key));
-
-                        if (property == null)
-                        {
-                            continue;
-                        }
-
                         Object? v = value;
 
-                        if (property.PropertyType.IsEnum)
+                        if (property?.PropertyType.IsEnum ?? false)
                         {
                             v = Enum.Parse(property.PropertyType, (String)v, true);
                         }
 
-                        property.SetValue(result, v, null);
+                        if (v is DBNull)
+                        {
+                            v = null;
+                        }
+
+                        property?.SetValue(result, v, null);
                     }
                     catch (Exception exception)
                     {

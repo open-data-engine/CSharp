@@ -64,13 +64,12 @@ namespace OpenDataEngine.Source
 
         public static async ValueTask<TModel> ExecuteSingle<TModel>(this Source source, (String command, (String, Object)[] arguments) statement, CancellationToken token)
         {
-            IAsyncEnumerator<TModel> enumerator = source.ExecuteMany<TModel>(statement, token).GetAsyncEnumerator(token);
-            
-            await enumerator.MoveNextAsync();
-            TModel result = enumerator.Current;
-            await enumerator.DisposeAsync();
+            await foreach (TModel result in source.ExecuteMany<TModel>(statement, token).WithCancellation(token).ConfigureAwait(false))
+            {
+                return result;
+            }
 
-            return result;
+            return default;
         }
     }
 }
