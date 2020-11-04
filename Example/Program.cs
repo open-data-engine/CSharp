@@ -12,6 +12,7 @@ using DotNetEnv;
 using OpenDataEngine;
 using OpenDataEngine.Connection;
 using OpenDataEngine.Query;
+using OpenDataEngine.Query.Clause;
 using OpenDataEngine.Schema;
 using OpenDataEngine.Source;
 using OpenDataEngine.Strategy;
@@ -31,10 +32,9 @@ namespace Example
             // Load .env file
             Env.Load();
 
-            String username = "Chris";
-            UInt32 companyId = 1005;
-            UInt32 locationId = 1;
-            String branche = "Generiek";
+            const String username = "Chris";
+            const UInt32 companyId = 1005;
+            const UInt32 locationId = 1;
 
             String host = Env.GetString("DB_HOST");
             String user = Env.GetString("DB_USER");
@@ -44,7 +44,6 @@ namespace Example
             {
                 "General" => $"FYN_{companyId}_General",
                 "Location" => $"FYN_{companyId}_Location{locationId}",
-                "Branche" => $"FYN_{branche}",
                 _ => $"FYN_{s}",
             };
 
@@ -53,15 +52,23 @@ namespace Example
             CacheFirst strategy = new CacheFirst(cache, database);
             Book book = new Book
             {
-                Author = "Chris Kruining",
+                Author = new Relation
+                {
+                    FirstName = "Chris Kruining",
+                },
                 Title = "API's for dummies",
                 Publisher = "FYN Software",
                 PublishedAt = DateTime.Now,
             };
 
-            Relation relation = await Relation.With(book).Where(r => r.ID == 10000321 && r.Status == Status.Active);
+            Relation relationWithRelationalFilters = await Relation.With(book).Where(
+                r => r.ID == 10000321 
+                    && r.Status == Status.Active 
+                    && r.Book.Title == "API's for dummies" 
+                    && r.Friends.Any(f => f.SurName == "Kruining")
+            );
 
-            await Performance.MeasureAndSummerize(
+            await Performance.MeasureAndSummarize(
                 1000, 
                 ("O.D.E. multi", async () =>
                 {
@@ -98,7 +105,10 @@ namespace Example
                 {
                     try
                     {
-                        Relation relation = await Relation.Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName }).From(strategy).Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username));
+                        Relation relation = await Relation
+                            .Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName })
+                            .From(strategy)
+                            .Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username));
                     }
                     catch (Exception exception)
                     {
@@ -128,11 +138,11 @@ namespace Example
 
     public static class Performance
     {
-        public static async Task MeasureAndSummerize(UInt32 iterations, params (String Topic, Func<Task> Action)[] topics)
+        public static async Task MeasureAndSummarize(UInt32 iterations, params (String Topic, Func<Task> Action)[] topics)
         {
             (String, Decimal[])[] measurements = await topics.ToAsyncEnumerable().SelectAwait(async t => (t.Topic, await Measure(iterations, t.Action))).ToArrayAsync();
 
-            Summerize(iterations, measurements);
+            Summarize(iterations, measurements);
         }
 
         public static async Task<Decimal[]> Measure(UInt32 iterations, Func<Task> action)
@@ -159,7 +169,7 @@ namespace Example
             return measurements;
         }
 
-        public static void Summerize(UInt32 length, params (String Topic, Decimal[] Measurments)[] topics)
+        public static void Summarize(UInt32 length, params (String Topic, Decimal[] Measurments)[] topics)
         {
             List<Decimal> sums = topics.Select(t => t.Measurments.Sum()).ToList();
             Decimal totalSum = sums.Sum();

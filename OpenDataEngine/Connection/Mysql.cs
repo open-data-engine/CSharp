@@ -40,7 +40,7 @@ namespace OpenDataEngine.Connection
         };
 
         private readonly MySqlConnectionStringBuilder _connectionStringBuilder;
-        private MySqlConnection _connection;
+        private MySqlConnection? _connection;
 
         public Mysql(MySqlConnectionStringBuilder connectionStringBuilder)
         {
@@ -52,7 +52,7 @@ namespace OpenDataEngine.Connection
         private Boolean IsConnected => _connection != null && _connection.State == ConnectionState.Open;
         public override async Task Connect(CancellationToken token)
         {
-            if (_connection != null)
+            if (IsConnected)
             {
                 return;
             }
@@ -69,7 +69,7 @@ namespace OpenDataEngine.Connection
             }
         }
 
-        private async Task<DbDataReader> ExecuteQuery(String sql, (String, Object)[] arguments, CancellationToken token)
+        private async Task<DbDataReader> ExecuteQuery(String sql, IEnumerable<(String, Object)> arguments, CancellationToken token)
         {
             if (IsConnected == false)
             {
@@ -82,7 +82,9 @@ namespace OpenDataEngine.Connection
 
                 foreach ((String key, Object value) in arguments)
                 {
-                    // Note(Chris Kruining) This is a dirty hack to work arround the lack luster parsing of the adapter.
+                    // Note(Chris Kruining)
+                    // This is a dirty hack to work around the lack luster parsing of the adapter.
+                    // (Ergo; the adapter should have de-duplicated the arguments already)
                     if (command.Parameters.Contains($"@{key}"))
                     {
                         continue;
@@ -124,12 +126,12 @@ namespace OpenDataEngine.Connection
         {
             // 0 => "Can't get hostname for your address",
             1042 => "Can't create IP socket. This could be caused by closing and opening connections to fast",
-            1081 => "No connection could be astablished to the database",
+            1081 => "No connection could be established to the database",
             1044 => "Access denied",
             1045 => "Invalid user credentials",
-            1053 => "Server errror, server is shutting down",
-            1079 => "Server errror, server is shutting down",
-            1077 => "Server errror, server is shutting down",
+            1053 => "Server error, server is shutting down",
+            1079 => "Server error, server is shutting down",
+            1077 => "Server error, server is shutting down",
             1064 => "Error encountered in SQL syntax",
             1080 => "Forcing thread close",
             _ => null,

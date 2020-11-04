@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DotNetEnv;
 using OpenDataEngine;
 using OpenDataEngine.Attribute;
+using OpenDataEngine.Model.Relation;
 using OpenDataEngine.Query;
 using OpenDataEngine.Source;
 using OpenDataEngine.Strategy;
@@ -86,15 +88,19 @@ namespace Example.Model
 
         public String FullName => String.Join(" ", new[] { FirstName, MiddleName, SurName }.Where(n => !String.IsNullOrEmpty(n)));
 
+        [HasOne]
         public Book Book { get; set; }
 
-        public static new readonly (String Key, ISource Source)[] Sources =
+        [HasMany]
+        public List<Relation> Friends { get; set; }
+
+        public static readonly (String Key, ISource Source)[] Sources =
         {
             ("default", new Database(Env.GetString("DB_HOST"), Env.GetString("DB_USER"), Env.GetString("DB_PASS"), new { ID = "Customer_ID", FirstName = "First_Name", MiddleName = "Middle_Name", SurName = "Sur_Name" }, "General", "Customer")),
             ("cache", new Cache()),
         };
 
-        public static new readonly (String, IStrategy)[] Strategies =
+        public static readonly (String, IStrategy)[] Strategies =
         {
             ("default", new CacheFirst("cache", "default")),
         };

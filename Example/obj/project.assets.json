@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v5.0": {
+    "net5.0": {
       "DotNetEnv/1.4.0": {
         "type": "package",
         "dependencies": {
@@ -1241,7 +1241,7 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
-      "OpenDataEngine.Core/1.0.0.13": {
+      "OpenDataEngine.Core/1.0.0.15": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
@@ -4591,20 +4591,21 @@
         "system.xml.xdocument.nuspec"
       ]
     },
-    "OpenDataEngine.Core/1.0.0.13": {
+    "OpenDataEngine.Core/1.0.0.15": {
       "type": "project",
       "path": "../OpenDataEngine/OpenDataEngine.csproj",
       "msbuildProject": "../OpenDataEngine/OpenDataEngine.csproj"
     }
   },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v5.0": [
+    "net5.0": [
       "DotNetEnv >= 1.4.0",
-      "OpenDataEngine.Core >= 1.0.0.13"
+      "OpenDataEngine.Core >= 1.0.0.15"
     ]
   },
   "packageFolders": {
     "C:\\Users\\ChrisKruining\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages": {},
     "C:\\Microsoft\\Xamarin\\NuGet\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
@@ -4618,12 +4619,15 @@
       "outputPath": "D:\\Github\\open-data-engine\\CSharp\\Example\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
+        "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\Offline Packages",
         "C:\\Microsoft\\Xamarin\\NuGet\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
         "C:\\Users\\ChrisKruining\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.2.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 20.1.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 20.2.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
@@ -4631,13 +4635,17 @@
         "net5.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\DevExpress 19.2\\Components\\System\\Components\\Packages": {},
         "C:\\Program Files (x86)\\DevExpress 20.1\\Components\\System\\Components\\Packages": {},
+        "C:\\Program Files (x86)\\DevExpress 20.2\\Components\\System\\Components\\Packages": {},
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\bin\\x64\\Debug": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://pkgs.dev.azure.com/fyn-software/9648caff-97d7-4de6-bf0a-09b2652c356c/_packaging/AzureDevOps/nuget/v3/index.json": {}
       },
       "frameworks": {
         "net5.0": {
+          "targetAlias": "netcoreapp5.0",
           "projectReferences": {
             "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {
               "projectPath": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj"
@@ -4653,6 +4661,7 @@
     },
     "frameworks": {
       "net5.0": {
+        "targetAlias": "netcoreapp5.0",
         "dependencies": {
           "DotNetEnv": {
             "target": "Package",
@@ -4674,7 +4683,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100-preview.2.20176.6\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.100-rc.2.20479.15\\RuntimeIdentifierGraph.json"
       }
     }
   }

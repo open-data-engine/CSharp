@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
@@ -43,7 +42,6 @@ namespace OpenDataEngine.Source
                 return await this.ExecuteSingle<TResult>(this.Prepare<TResult>(expression), token);
             }
             
-            Stopwatch stopwatch = Stopwatch.StartNew();
             Type modelType = typeof(TResult).GetGenericArguments()[0];
             Object prepared = typeof(SourceExtensions)
                 .GetMethod("Prepare", BindingFlags.Static | BindingFlags.Public)
