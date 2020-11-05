@@ -31,7 +31,7 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Select");
                     }
 
-                    return new Select(body.Parameters[0].Type, (body.Body as NewExpression)!.Arguments);
+                    return new Select(body.Parameters[0].Name!, body.Parameters[0].Type, (body.Body as NewExpression)!.Arguments);
                 }
 
                 case "Where":
@@ -41,7 +41,7 @@ namespace OpenDataEngine.Query
                         throw new Exception("Unable to visit the argument of Where");
                     }
 
-                    return new Where(body.Parameters[0].Type, body.Body);
+                    return new Where(body.Parameters[0].Name!, body.Parameters[0].Type, body.Body);
                 }
 
                 case "Take":

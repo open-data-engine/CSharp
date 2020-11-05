@@ -94,7 +94,7 @@ namespace OpenDataEngine.Adapter
                 {
                     clause = Clause.Where;
                     using var visitor = new WhereVisitor(this, _arguments, ref _constCount);
-                    sql = $"{(_clauses.ContainsKey(Clause.Where) ? "AND" : "WHERE")} {visitor.Recurse(whereExpression.ModelType, whereExpression.Body)}";
+                    sql = $"{(_clauses.ContainsKey(Clause.Where) ? "AND" : "WHERE")} {visitor.Recurse(whereExpression.Name, whereExpression.ModelType, whereExpression.Body)}";
 
                     break;
                 }
@@ -233,13 +233,13 @@ namespace OpenDataEngine.Adapter
 
         }
 
-        public String Recurse(Type modelType, Expression expression)
+        public String Recurse(String root, Type modelType, Expression expression)
         {
             switch (expression)
             {
                 case UnaryExpression e:
                 {
-                    String right = Recurse(modelType, e.Operand);
+                    String right = Recurse(root, modelType, e.Operand);
 
                     // TODO(Chris Kruining)
                     // I doubt this is a proper implementation,
@@ -262,10 +262,10 @@ namespace OpenDataEngine.Adapter
                     {
                         String constName = $"CONST_{_constCount++.Base52Encode()}";
                         _arguments.Add((constName, Enum.GetName(eLeft.Operand.Type, eRight.Value)!));
-                        return $"{Recurse(modelType, e.Left)} {e.NodeType.ToSql()} @{constName}";
+                        return $"{Recurse(root, modelType, e.Left)} {e.NodeType.ToSql()} @{constName}";
                     }
 
-                    String right = Recurse(modelType, e.Right);
+                    String right = Recurse(root, modelType, e.Right);
 
                     switch (e.NodeType)
                     {
@@ -276,17 +276,17 @@ namespace OpenDataEngine.Adapter
                                 right = right.Substring(right.IndexOf('(') + 1).TrimEnd(')');
                             }
 
-                            return $"COALESCE({Recurse(modelType, e.Left)}, {right})";
+                            return $"COALESCE({Recurse(root, modelType, e.Left)}, {right})";
                         }
 
                         case ExpressionType.OrElse:
                         {
-                            return $"({Recurse(modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right})";
+                            return $"({Recurse(root, modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right})";
                         }
 
                         default:
                         {
-                            return $"{Recurse(modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right}";
+                            return $"{Recurse(root, modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right}";
                         }
                     }
                 }
@@ -305,8 +305,8 @@ namespace OpenDataEngine.Adapter
                     {
                         throw new Exception("Unhandeled member access, member is neither a property nor a field");
                     }
-
-                    if (e.Member.DeclaringType == modelType)
+                    
+                    if (e.Member.DeclaringType == modelType && (e.Expression?.ToString().StartsWith(root) ?? false))
                     {
                         return $"{_owner.Source.Schema.ResolveProperty(e.Member.Name)}";
                     }
@@ -321,7 +321,7 @@ namespace OpenDataEngine.Adapter
                     {
                         case "Contains":
                         {
-                            return $"{Recurse(modelType, e.Arguments[0])} IN([Parse_what_is_in_front_of_contains])";
+                            return $"{Recurse(root, modelType, e.Arguments[0])} IN([Parse_what_is_in_front_of_contains])";
                         }
 
                         default:

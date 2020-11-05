@@ -5,11 +5,13 @@ namespace OpenDataEngine.Query.Clause
 {
     public class Where : Base
     {
+        public readonly String Name;
         public readonly Type ModelType;
         public readonly Expression Body;
 
-        public Where(Type type, Expression body)
+        public Where(String name, Type type, Expression body)
         {
+            Name = name;
             ModelType = type;
             Body = body;
         }
