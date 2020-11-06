@@ -1,21 +1,16 @@
 ﻿using Example.Model;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNetEnv;
-using OpenDataEngine;
-using OpenDataEngine.Connection;
+using OpenDataEngine.Adapter;
 using OpenDataEngine.Query;
-using OpenDataEngine.Query.Clause;
 using OpenDataEngine.Schema;
 using OpenDataEngine.Source;
-using OpenDataEngine.Strategy;
 
 namespace Example
 {
@@ -64,6 +59,12 @@ namespace Example
             //         && r.Book.Title == "API's for dummies" 
             //         && r.Friends.Any(f => f.SurName == "Kruining")
             // );
+            String subQuery = "`FYN_1005_General`.`Customer`.`First_Name` != ''";
+            Relation[]? relationWithRelationalFilters = await Relation
+                .Where(r => r.Status == Status.Active && Sql.Raw<Boolean>(subQuery))
+                .OrderBy(r => r.FirstName)
+                .ThenByDescending(r => r.SurName)
+                .ToArrayAsync();
 
             await Performance.MeasureAndSummarize(
                 1000, 
@@ -134,14 +135,14 @@ namespace Example
 
     public static class Performance
     {
-        public static async Task MeasureAndSummarize(UInt32 iterations, params (String Topic, Func<Task> Action)[] topics)
+        public static async ValueTask MeasureAndSummarize(UInt32 iterations, params (String Topic, Func<Task> Action)[] topics)
         {
             (String, Decimal[])[] measurements = await topics.ToAsyncEnumerable().SelectAwait(async t => (t.Topic, await Measure(iterations, t.Action))).ToArrayAsync();
 
             Summarize(iterations, measurements);
         }
 
-        public static async Task<Decimal[]> Measure(UInt32 iterations, Func<Task> action)
+        public static async ValueTask<Decimal[]> Measure(UInt32 iterations, Func<Task> action)
         {
             Decimal[] measurements = new Decimal[iterations];
             Stopwatch stopwatch = new Stopwatch();

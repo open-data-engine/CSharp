@@ -93,7 +93,7 @@ namespace OpenDataEngine.Adapter
                 case Where whereExpression:
                 {
                     clause = Clause.Where;
-                    using var visitor = new WhereVisitor(this, _arguments, ref _constCount);
+                    using WhereVisitor visitor = new WhereVisitor(this, _arguments, ref _constCount);
                     sql = $"{(_clauses.ContainsKey(Clause.Where) ? "AND" : "WHERE")} {visitor.Recurse(whereExpression.Name, whereExpression.ModelType, whereExpression.Body)}";
 
                     break;
@@ -106,6 +106,17 @@ namespace OpenDataEngine.Adapter
                     sql = limitExpression.Offset != null 
                         ? $"LIMIT {limitExpression.Offset}, {limitExpression.Amount}" 
                         : $"LIMIT {limitExpression.Amount}";
+
+                    break;
+                }
+
+                case Order orderExpression:
+                {
+                    clause = Clause.Order;
+
+                    using OrderVisitor orderVisitor = new OrderVisitor(this);
+                    String direction = orderExpression.Direction == OrderDirection.Ascending ? "ASC" : "DESC";
+                    sql = $"{(_clauses.ContainsKey(Clause.Order) ? ", " : "ORDER BY")} {orderVisitor.Recurse(orderExpression.ModelType, orderExpression.Filter)} {direction}";
 
                     break;
                 }
@@ -135,16 +146,18 @@ namespace OpenDataEngine.Adapter
 
                 foreach ((String key, dynamic value) in record)
                 {
+                    PropertyInfo? property = type.GetProperty(Source.Schema.ReverseResolveProperty(key));
+                    Object? v = value;
+
                     try
                     {
-                        PropertyInfo? property = type.GetProperty(Source.Schema.ReverseResolveProperty(key));
-                        Object? v = value;
-
-                        if (property?.PropertyType.IsEnum ?? false)
+                        // Handle enums
+                        if (property?.PropertyType.IsEnum == true && Enum.TryParse(property.PropertyType, (String)v, true, out v) == false)
                         {
-                            v = Enum.Parse(property.PropertyType, (String)v, true);
+                            v = Enum.ToObject(property.PropertyType, 0);
                         }
 
+                        // Handle `null`
                         if (v is DBNull)
                         {
                             v = null;
@@ -154,16 +167,23 @@ namespace OpenDataEngine.Adapter
                     }
                     catch (Exception exception)
                     {
-                        throw new Exception($"failed to map field '{key}' to property, reason: '{exception.Message}'", exception);
+                        throw new Exception($"failed to map field '{key}' to property '{type.FullName}.{property?.Name}', reason: '{exception.Message}'", exception);
                     }
                 }
 
                 yield return result;
             }
         }
+
+        public static T Raw<T>(String sql) => default!;
+
+        public static void Raw(String sql)
+        {
+
+        }
     }
 
-    public class SelectVisitor: IDisposable
+    public sealed class SelectVisitor: IDisposable
     {
         private readonly Sql _owner;
         private readonly List<(String, Object)> _arguments;
@@ -215,7 +235,7 @@ namespace OpenDataEngine.Adapter
         }
     }
 
-    public class WhereVisitor: IDisposable
+    public sealed class WhereVisitor: IDisposable
     {
         private readonly Sql _owner;
         private readonly List<(String, Object)> _arguments;
@@ -230,7 +250,6 @@ namespace OpenDataEngine.Adapter
 
         public void Dispose()
         {
-
         }
 
         public String Recurse(String root, Type modelType, Expression expression)
@@ -262,33 +281,18 @@ namespace OpenDataEngine.Adapter
                     {
                         String constName = $"CONST_{_constCount++.Base52Encode()}";
                         _arguments.Add((constName, Enum.GetName(eLeft.Operand.Type, eRight.Value)!));
+
                         return $"{Recurse(root, modelType, e.Left)} {e.NodeType.ToSql()} @{constName}";
                     }
 
                     String right = Recurse(root, modelType, e.Right);
 
-                    switch (e.NodeType)
+                    return e.NodeType switch
                     {
-                        case ExpressionType.Coalesce:
-                        {
-                            if (right.StartsWith("COALESCE"))
-                            {
-                                right = right.Substring(right.IndexOf('(') + 1).TrimEnd(')');
-                            }
-
-                            return $"COALESCE({Recurse(root, modelType, e.Left)}, {right})";
-                        }
-
-                        case ExpressionType.OrElse:
-                        {
-                            return $"({Recurse(root, modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right})";
-                        }
-
-                        default:
-                        {
-                            return $"{Recurse(root, modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right}";
-                        }
-                    }
+                        ExpressionType.Coalesce => $"COALESCE({Recurse(root, modelType, e.Left)}, {(right.StartsWith("COALESCE") ? right[9..].TrimEnd(')') : right)})",
+                        ExpressionType.OrElse => $"({Recurse(root, modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right})",
+                        _ => $"{Recurse(root, modelType, e.Left)} {e.NodeType.ToSql(right == "NULL")} {right}"
+                    };
                 }
 
                 case ConstantExpression e:
@@ -324,6 +328,11 @@ namespace OpenDataEngine.Adapter
                             return $"{Recurse(root, modelType, e.Arguments[0])} IN([Parse_what_is_in_front_of_contains])";
                         }
 
+                        case "Raw" when e.Method.DeclaringType == typeof(Sql):
+                        {
+                            return (String)e.Arguments[0].GetValue()!;
+                        }
+
                         default:
                             throw new Exception($"'{e.Method.Name}' method calls in Where clause not supported at this point in time");
                     }
@@ -332,6 +341,40 @@ namespace OpenDataEngine.Adapter
 
                 default:
                     throw new Exception("Unhandeled expression in Where clause");
+            }
+        }
+    }
+
+    public sealed class OrderVisitor: IDisposable
+    {
+        private readonly Sql _owner;
+
+        public OrderVisitor(Sql owner)
+        {
+            _owner = owner;
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public string Recurse(Type modelType, Expression expression)
+        {
+            switch (expression)
+            {
+                case MemberExpression e:
+                {
+                    // TODO(Chris Kruining) this if gives false positives in a couple of legit situations, fix this...
+                    if (!(e.Member is PropertyInfo) && !(e.Member is FieldInfo) && e.Member.DeclaringType != modelType)
+                    {
+                        throw new Exception("Unhandled member access, member is neither a property nor a field");
+                    }
+
+                    return $"{_owner.Source.Schema.ResolveProperty(e.Member.Name)}";
+                }
+
+                default:
+                    throw new Exception("Unhandled expression in Order clause");
             }
         }
     }

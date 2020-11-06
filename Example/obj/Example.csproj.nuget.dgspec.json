@@ -83,7 +83,7 @@
       }
     },
     "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj": {
-      "version": "1.0.0.19",
+      "version": "1.0.0.25",
       "restore": {
         "projectUniqueName": "D:\\Github\\open-data-engine\\CSharp\\OpenDataEngine\\OpenDataEngine.csproj",
         "projectName": "OpenDataEngine.Core",

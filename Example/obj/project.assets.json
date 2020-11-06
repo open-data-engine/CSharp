@@ -1241,7 +1241,7 @@
           "lib/netstandard1.3/System.Xml.XDocument.dll": {}
         }
       },
-      "OpenDataEngine.Core/1.0.0.19": {
+      "OpenDataEngine.Core/1.0.0.25": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v5.0",
         "dependencies": {
@@ -4591,7 +4591,7 @@
         "system.xml.xdocument.nuspec"
       ]
     },
-    "OpenDataEngine.Core/1.0.0.19": {
+    "OpenDataEngine.Core/1.0.0.25": {
       "type": "project",
       "path": "../OpenDataEngine/OpenDataEngine.csproj",
       "msbuildProject": "../OpenDataEngine/OpenDataEngine.csproj"
@@ -4600,7 +4600,7 @@
   "projectFileDependencyGroups": {
     "net5.0": [
       "DotNetEnv >= 1.4.0",
-      "OpenDataEngine.Core >= 1.0.0.19"
+      "OpenDataEngine.Core >= 1.0.0.25"
     ]
   },
   "packageFolders": {
