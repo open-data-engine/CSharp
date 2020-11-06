@@ -60,9 +60,10 @@ namespace OpenDataEngine
             return encoded;
         }
 
-        // Resolves some laziness around anonymnous type, likely error prone
+        // Resolves some laziness around anonymous type, likely error prone
         public static T ValueOf<T>(this Object source, String property) => (T)source.GetType()?.GetProperty(property)?.GetValue(source, null)!;
-        public static Boolean Has(this Object source, String property) => source.GetType().GetProperty(property) != null;
+        public static Boolean Has<T>(this T source, String property) => source?.GetType().GetProperty(property) != null;
+        public static Boolean In<T>(this T item, IEnumerable<T> list) => list.Contains(item);
 
         public static TAttribute? GetCustomAttribute<TAttribute>(this Type type) where TAttribute : System.Attribute => (TAttribute?)System.Attribute.GetCustomAttribute(type, typeof(TAttribute));
     }
