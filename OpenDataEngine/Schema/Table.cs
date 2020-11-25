@@ -24,12 +24,12 @@ namespace OpenDataEngine.Schema
 
         public override String ResolvePath(String path) => $"`{DatabaseFormatter?.Invoke(Database) ?? Database}`.`{TableFormatter?.Invoke(Name) ?? Name}`";
         public override String ResolveProperty(String property, Boolean alias = false) => _mapping.Has(property) && alias
-            ? $"{ResolvePath("")}.`{_mapping.ValueOf<String>(property)}` AS '{property}'"
-            : $"{ResolvePath("")}.`{_mapping.ValueOf<String>(property) ?? base.ResolveProperty(property)}`";
+            ? $"{ResolvePath("")}.`{_mapping.ValueOf<String?>(property)}` AS '{property}'"
+            : $"{ResolvePath("")}.`{_mapping.ValueOf<String?>(property) ?? base.ResolveProperty(property)}`";
 
         public override String ReverseResolveProperty(String property) => _mapping.GetType().GetProperties().SingleOrDefault(p => (p.GetValue(_mapping) as String) == property)?.Name ?? base.ReverseResolveProperty(property);
 
-        private (String, String)[] _map;
+        private (String, String)[]? _map;
         public (String Local, String Foreign)[] Mapping => _map ??= _mapping.GetType().GetProperties().Select(p => (p.Name, (String)p.GetValue(_mapping)!)).ToArray();
     }
 }

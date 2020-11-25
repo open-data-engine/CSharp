@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using DotNetEnv;
-using OpenDataEngine;
 using OpenDataEngine.Attribute;
-using OpenDataEngine.Model.Relation;
 using OpenDataEngine.Query;
+using OpenDataEngine.Relation;
 using OpenDataEngine.Source;
 using OpenDataEngine.Strategy;
 
-namespace Example.Model
+namespace Example.Model.Relation
 {
     public enum Status
     {
@@ -27,7 +25,6 @@ namespace Example.Model
         FF,
         MM,
         MF,
-
     }
 
     public enum Entry
@@ -46,8 +43,10 @@ namespace Example.Model
 
     [Strategies(typeof(Relation))]
     [Sources(typeof(Relation))]
+    [Relations(typeof(Relation))]
     public class Relation : Queryable<Relation>
     {
+        #region Fields
         public UInt32 ID { get; set; }
         public String Username { get; set; }
         public Status Status { get; set; }
@@ -99,6 +98,7 @@ namespace Example.Model
             Gender.Family => "Fam.",
             _ => "",
         };
+
         public String DisplayName => (FirstName, MiddleName, SurName) switch
         {
             ("", "", "") => throw new Exception("No names given"),
@@ -110,45 +110,41 @@ namespace Example.Model
             (_, _, "") => $"{FirstName} {MiddleName}",
             (_, _, _) => $"{FirstName} {MiddleName} {SurName}",
         };
+
         public String FormalDisplayName => $"{Salutation} {DisplayName}";
         public Boolean IsUser => true;
+        #endregion
 
-        public IAsyncEnumerable<Location> LocationsFast
+        #region Relations
+        public IEnumerable<Extra> Extras { get; set; }
+        public IEnumerable<Relation> Friends { get; set; }
+        #endregion
+
+        public static readonly IDictionary<String, ISource> Sources = new Dictionary<String, ISource>
         {
-            get
             {
-                Query<Location> query = new Query<Location>();
-
-                if (IsUser)
-                {
-                    // var location = User.Location;
-                    var location = new Location
+                "default",
+                new Database(Env.GetString("DB_HOST"), Env.GetString("DB_USER"), Env.GetString("DB_PASS"),
+                    new
                     {
-                        CompanyId = 1005,
-                        LocationId = 1,
-                    };
-
-                    // query = Location.Where(l => l.RelationId == ID || (l.CompanyId == location.CompanyId && l.LocationId == location.LocationId) || location.Resellers.Select(r => r.Id).Contains(l.ResellerId));
-                    query.Where(l => l.RelationId == ID || (l.CompanyId == location.CompanyId && l.LocationId == location.LocationId));
-                }
-                else
-                {
-                    query.Where(l => l.RelationId == ID);
-                }
-
-                return query;
-            }
-        }
-
-        public static readonly (String Key, ISource Source)[] Sources =
-        {
-            ("default", new Database(Env.GetString("DB_HOST"), Env.GetString("DB_USER"), Env.GetString("DB_PASS"), new { ID = "Customer_ID", FirstName = "First_Name", MiddleName = "Middle_Name", SurName = "Sur_Name" }, "General", "Customer")),
-            ("cache", new Cache()),
+                        ID = "Customer_ID",
+                        FirstName = "First_Name",
+                        MiddleName = "Middle_Name",
+                        SurName = "Sur_Name"
+                    }, "General", "Customer")
+            },
+            { "cache", new Cache() },
         };
 
-        public static readonly (String, IStrategy)[] Strategies =
+        public static readonly IDictionary<String, IStrategy> Strategies = new Dictionary<String, IStrategy>
         {
-            ("default", new CacheFirst("cache", "default")),
+            { "default", new CacheFirst("cache", "default") },
+        };
+
+        public static readonly IRelation?[] Relations =
+        {
+            new OwnsMany<Relation, Extra>(nameof(Extras), (r, b) => r.ID == b.RelationID),
+            new HasMany<Relation, Relation>(nameof(Friends), (r, f) => r.ID == f.ID),
         };
     }
 }

@@ -5,9 +5,11 @@ using System.Data.Common;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Logging;
+using MySqlConnector;
 
 namespace OpenDataEngine.Connection
 {
@@ -71,6 +73,8 @@ namespace OpenDataEngine.Connection
 
         private async Task<DbDataReader> ExecuteQuery(String sql, IEnumerable<(String, Object)> arguments, CancellationToken token)
         {
+            await Connect(token);
+
             if (IsConnected == false)
             {
                 throw new Exception("Connection not available for executing query");
@@ -110,12 +114,17 @@ namespace OpenDataEngine.Connection
 
         public override async IAsyncEnumerable<IDictionary<String, dynamic>> Execute(String sql, (String, Object)[] arguments, [EnumeratorCancellation] CancellationToken token)
         {
-            await Connect(token);
-            await using DbDataReader reader = await ExecuteQuery(sql, arguments, token);
+            Source?.Logger?.LogDebug($"executing query '{sql}', with arguments {JsonSerializer.Serialize(arguments)}");
 
+            await using DbDataReader reader = await ExecuteQuery(sql, arguments, token);
+            
             while (await reader.ReadAsync(token))
             {
-                yield return Enumerable.Range(0, reader.FieldCount).ToDictionary(reader.GetName, reader.GetValue);
+                IDictionary<String, dynamic> row = Enumerable.Range(0, reader.FieldCount).ToDictionary(reader.GetName, reader.GetValue);
+
+                Source?.Logger?.LogDebug($"yielding row: {JsonSerializer.Serialize(row)}");
+
+                yield return row;
             }
         }
     }
@@ -137,7 +146,7 @@ namespace OpenDataEngine.Connection
             _ => null,
         };
 
-        public DatabaseException(MySqlException exception, String query = null, [CallerMemberName] String caller = null, [CallerLineNumber] Int32 lineNumber = 0): 
+        public DatabaseException(MySqlException exception, String query = "No query provided", [CallerMemberName] String? caller = null, [CallerLineNumber] Int32 lineNumber = 0): 
             base($"({caller}:{lineNumber.ToString(CultureInfo.InvariantCulture)}) Database error: '{message(exception.Number) ?? exception.Message}', with query: '{query}'", exception) {}
     }
 }

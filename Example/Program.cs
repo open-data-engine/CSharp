@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DotNetEnv;
+using Example.Model.Relation;
+using Microsoft.Extensions.Logging;
 using OpenDataEngine.Adapter;
 using OpenDataEngine.Query;
 using OpenDataEngine.Schema;
@@ -14,26 +15,27 @@ using OpenDataEngine.Source;
 
 namespace Example
 {
-    public static class TemporarySource
-    {
-    }
-
     class Program
     {
         static async Task Main(string[] args)
         {
             Console.WriteLine("Entered Program.Main");
 
+            Setup();
+
+            await TestRelations();
+            // await TestPerformance();
+
+            Console.ReadLine();
+        }
+
+        private static void Setup()
+        {
             // Load .env file
             Env.Load();
 
-            const String username = "Chris";
             const UInt32 companyId = 1005;
             const UInt32 locationId = 1;
-
-            String host = Env.GetString("DB_HOST");
-            String user = Env.GetString("DB_USER");
-            String pass = Env.GetString("DB_PASS");
 
             Table.DatabaseFormatter = s => s switch
             {
@@ -42,45 +44,62 @@ namespace Example
                 _ => $"FYN_{s}",
             };
 
-            Database database = new Database(host, user, pass, new { ID = "Customer_ID", FirstName = "First_Name", MiddleName = "Middle_Name", SurName = "Sur_Name" }, "General", "Customer");
-            // Book book = new Book
-            // {
-            //     Author = new Relation
-            //     {
-            //         FirstName = "Chris Kruining",
-            //     },
-            //     Title = "API's for dummies",
-            //     Publisher = "FYN Software",
-            //     PublishedAt = DateTime.Now,
-            // };
-            // Relation relationWithRelationalFilters = await Relation.With(book).Where(
-            //     r => r.ID == 10000321 
-            //         && r.Status == Status.Active 
-            //         && r.Book.Title == "API's for dummies" 
-            //         && r.Friends.Any(f => f.SurName == "Kruining")
-            // );
-            String subQuery = "`FYN_1005_General`.`Customer`.`First_Name` != ''";
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Debug);
+            });
+            ILogger<ISource> logger = loggerFactory.CreateLogger<ISource>();
+
+            Relation.Sources["default"].Logger = logger;
+        }
+
+        private static async ValueTask TestRelations()
+        {
+            Book book = new Book
+            {
+                Author = new Relation
+                {
+                    FirstName = "Chris Kruining",
+                },
+                Title = "API's for dummies",
+                Publisher = "FYN Software",
+                PublishedAt = DateTime.Now,
+            };
             Relation[]? relationWithRelationalFilters = await Relation
-                .Where(r => r.Status == Status.Active && Sql.Raw<Boolean>(subQuery))
+                .Where(
+                    r => r.Status == Status.Active 
+                        && Sql.Raw<Boolean>("`FYN_1005_General`.`Customer`.`First_Name` != ''")
+                        && r.Extras.Any(b => b.Type == Extra.ExtraType.AzureActiveDirectory)
+                        // && Sql.Raw<Boolean>("`FYN_1005_General`.`Customer`.`ID` IN(SELECT R_Extras.`RelationID` FROM `FYN_1005_General`.`Relation_Extra` as R_Extras Where R_Extras.`Type` = 'AzureActiveDirectory')")
+                )
                 .OrderBy(r => r.FirstName)
                 .ThenByDescending(r => r.SurName)
                 .ToArrayAsync();
+        }
+
+        private static async ValueTask TestPerformance()
+        {
+            const String username = "Chris";
+
+            String host = Env.GetString("DB_HOST");
+            String user = Env.GetString("DB_USER");
+            String pass = Env.GetString("DB_PASS");
+
+            Database database = new Database(host, user, pass, new { ID = "Customer_ID", FirstName = "First_Name", MiddleName = "Middle_Name", SurName = "Sur_Name" }, "General", "Customer");
 
             await Performance.MeasureAndSummarize(
-                1000, 
+                1000,
                 ("O.D.E. multi", async () =>
                 {
                     List<Relation> relations = new List<Relation>();
-                    try
+                    IAsyncQueryable<Relation> query = Relation
+                        .Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName })
+                        .Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username));
+
+                    await foreach (Relation relation in query)
                     {
-                        await foreach (Relation relation in Relation.Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName }).Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username)))
-                        {
-                            relations.Add(relation);
-                        }
-                    }
-                    catch (Exception exception)
-                    {
-                        Console.WriteLine("Exeption :: " + exception.Message);
+                        relations.Add(relation);
                     }
                 }),
                 ("Manual multi", async () =>
@@ -101,16 +120,9 @@ namespace Example
                 }),
                 ("O.D.E. single", async () =>
                 {
-                    try
-                    {
-                        Relation relation = await Relation
-                            .Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName })
-                            .Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username));
-                    }
-                    catch (Exception exception)
-                    {
-                        Console.WriteLine("Exeption :: " + exception.Message);
-                    }
+                    Relation relation = await Relation
+                        .Select(r => new { r.ID, r.FirstName, r.MiddleName, r.SurName })
+                        .Where(r => r.Username != "" && r.Status == Status.Active && (r.ID > 100 || r.Username == username));
                 }),
                 ("Manual single", async () =>
                 {
@@ -128,8 +140,6 @@ namespace Example
                         }).SingleAsync();
                 })
             );
-
-            Console.ReadLine();
         }
     }
 

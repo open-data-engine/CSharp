@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using OpenDataEngine.Source;
 
 namespace OpenDataEngine.Schema
 {
     public interface ISchema
     {
-        public Source.Source Source { get; set; }
+        public ISource? Source { get; set; }
 
         public String ResolvePath(String path);
         public String ResolveProperty(String property, Boolean alias = false);
