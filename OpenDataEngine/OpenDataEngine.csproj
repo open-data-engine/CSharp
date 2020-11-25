@@ -46,10 +46,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySqlConnector" Version="0.66.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.9" />
+    <PackageReference Include="MySqlConnector" Version="1.0.1" />
     <PackageReference Include="System.Linq.Async" Version="4.1.1" />
     <PackageReference Include="System.Linq.Async.Queryable" Version="4.1.1" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.1.1" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.5" />
   </ItemGroup>
 
 </Project>

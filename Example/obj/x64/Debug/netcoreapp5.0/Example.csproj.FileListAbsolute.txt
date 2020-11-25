@@ -22,3 +22,15 @@ D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\MySqlConne
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp5.0\Example.GeneratedMSBuildEditorConfig.editorconfig
 D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\ref\Example.dll
 D:\Github\open-data-engine\CSharp\Example\obj\x64\Debug\netcoreapp5.0\ref\Example.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Configuration.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Configuration.Abstractions.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Configuration.Binder.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.DependencyInjection.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Logging.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Logging.Abstractions.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Logging.Configuration.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Logging.Console.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Options.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Options.ConfigurationExtensions.dll
+D:\Github\open-data-engine\CSharp\Example\bin\x64\Debug\netcoreapp5.0\Microsoft.Extensions.Primitives.dll

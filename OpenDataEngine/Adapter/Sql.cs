@@ -8,8 +8,10 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using OpenDataEngine.Attribute;
 using OpenDataEngine.Query;
 using OpenDataEngine.Query.Clause;
+using OpenDataEngine.Relation;
 
 namespace OpenDataEngine.Adapter
 {
@@ -85,10 +87,12 @@ namespace OpenDataEngine.Adapter
             switch (expression)
             {
                 case Select selectExpression:
+                {
                     clause = Clause.Select;
                     sql = $"SELECT {String.Join(", ", selectExpression.Fields.Select(f => new SelectVisitor(this, _arguments, ref _constCount).Recurse(selectExpression.ModelType, f)))}";
 
                     break;
+                }
 
                 case Where whereExpression:
                 {
@@ -116,7 +120,7 @@ namespace OpenDataEngine.Adapter
 
                     using OrderVisitor orderVisitor = new OrderVisitor(this);
                     String direction = orderExpression.Direction == OrderDirection.Ascending ? "ASC" : "DESC";
-                    sql = $"{(_clauses.ContainsKey(Clause.Order) ? ", " : "ORDER BY")} {orderVisitor.Recurse(orderExpression.ModelType, orderExpression.Filter)} {direction}";
+                    sql = $"{(_clauses.ContainsKey(Clause.Order) ? "," : "ORDER BY")} {orderVisitor.Recurse(orderExpression.ModelType, orderExpression.Filter)} {direction}";
 
                     break;
                 }
@@ -176,11 +180,6 @@ namespace OpenDataEngine.Adapter
         }
 
         public static T Raw<T>(String sql) => default!;
-
-        public static void Raw(String sql)
-        {
-
-        }
     }
 
     public sealed class SelectVisitor: IDisposable
@@ -325,12 +324,25 @@ namespace OpenDataEngine.Adapter
                     {
                         case "Contains":
                         {
-                            return $"{Recurse(root, modelType, e.Arguments[0])} IN([Parse_what_is_in_front_of_contains])";
+                            return $"{Recurse(root, modelType, e.Arguments[0])} IN(SELECT 1 FROM X WHERE [Parse_what_is_in_front_of_contains] LIMIT 1)";
                         }
 
                         case "Raw" when e.Method.DeclaringType == typeof(Sql):
                         {
                             return (String)e.Arguments[0].GetValue()!;
+                        }
+
+                        case "Any" when e.Method.DeclaringType == typeof(Enumerable) && e.Arguments[0] is MemberExpression caller:
+                        {
+                            String name = caller.Member.Name;
+                            IRelation relation = modelType.GetCustomAttribute<RelationsAttribute>()?[name] 
+                                ?? throw new Exception($"Unable to find a relation under the name of '{name}'");
+
+                            LambdaExpression filter = (LambdaExpression)e.Arguments[1];
+
+                            var join = relation.Resolve(_owner);
+
+                            return $"{filter.Body}";
                         }
 
                         default:

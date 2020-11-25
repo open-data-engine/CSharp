@@ -2,7 +2,6 @@ using System;
 using OpenDataEngine.Adapter;
 using OpenDataEngine.Connection;
 using OpenDataEngine.Schema;
-using OpenDataEngine.Model.Relation;
 using OpenDataEngine.Query;
 using OpenDataEngine.Source;
 
@@ -10,12 +9,13 @@ namespace Example.Model
 {
     public class Book : Queryable<Book>
     {
+        public UInt32 ID { get; set; }
+        public UInt32 RelationID { get; set; }
         public String Title { get; set; }
         public String Publisher { get; set; }
         public DateTime PublishedAt { get; set; }
 
-        [HasOne]
-        public Relation Author { get; set; }
+        public Relation.Relation Author { get; set; }
     }
 
     public class TypicodeAPI : Source

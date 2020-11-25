@@ -2,6 +2,6 @@
 {
     public class Cache : Source
     {
-        public Cache() : base(null, null, null) { }
+        public Cache() : base(new Connection.Default(), new Adapter.Default(), new Schema.Default()) { }
     }
 }

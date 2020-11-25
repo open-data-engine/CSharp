@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OpenDataEngine.Adapter;
 using OpenDataEngine.Connection;
 using OpenDataEngine.Query;
@@ -14,9 +14,10 @@ namespace OpenDataEngine.Source
 {
     public class Source : QueryProvider, ISource
     {
-        public readonly IConnection Connection;
-        public readonly IAdapter Adapter;
-        public readonly ISchema Schema;
+        public ILogger<ISource>? Logger { get; set; }
+        public IConnection Connection { get; }
+        public IAdapter Adapter { get; }
+        public ISchema Schema { get; }
 
         public Source(IConnection connection, IAdapter adapter, ISchema schema)
         {
@@ -24,15 +25,9 @@ namespace OpenDataEngine.Source
             Adapter = adapter;
             Schema = schema;
 
-            if (Adapter != null)
-            {
-                Adapter.Source = this;
-            }
-
-            if (Schema != null)
-            {
-                Schema.Source = this;
-            }
+            Connection.Source = this;
+            Adapter.Source = this;
+            Schema.Source = this;
         }
 
         public override async ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token)

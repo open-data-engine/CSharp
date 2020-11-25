@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,10 +7,10 @@ namespace OpenDataEngine.Strategy
 {
     public class StaleWhileRevalidate: Base
     {
-        private readonly Source.Source _cache;
-        private readonly Source.Source _fallback;
+        private readonly SourceReference _cache;
+        private readonly SourceReference _fallback;
 
-        public StaleWhileRevalidate(Source.Source cache, Source.Source fallback)
+        public StaleWhileRevalidate(SourceReference cache, SourceReference fallback)
         {
             _cache = cache;
             _fallback = fallback;
@@ -17,7 +18,7 @@ namespace OpenDataEngine.Strategy
 
         public override ValueTask<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken token)
         {
-            return _fallback.ExecuteAsync<TResult>(expression, token);
+            return _fallback.Resolve<TResult>()?.ExecuteAsync<TResult>(expression, token) ?? throw new Exception("Unable to resolve the 'fallback' source");
         }
     }
 }
